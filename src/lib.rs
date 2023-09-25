@@ -35,7 +35,7 @@ fn setup(
 #[wasm_bindgen(start)]
 pub fn start() {
     App::new()
-        .insert_resource(ClearColor(Color::rgb(0.8, 0.3, 0.)))
+        .insert_resource(ClearColor(Color::NONE))
         .add_plugins(DefaultPlugins
             .set(WindowPlugin {
                 primary_window: Some(Window {
