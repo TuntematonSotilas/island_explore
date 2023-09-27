@@ -53,6 +53,16 @@ fn setup(
         right_click: idle,
     };
 
+    let bkg = sprites.load("/public/sprite/bkg.png");
+
+    commands.spawn(
+        PxSpriteBundle ::<Layer> {
+            sprite: bkg,
+            position: IVec2::new(0, 0).into(),
+           // layers: PxFilterLayers::single_clip(Layer),
+            ..Default::default()
+        });
+
     let button_idle = sprites.load("/public/sprite/button_idle.png");
 
     // Filter-based button
@@ -70,6 +80,7 @@ fn setup(
         },
         Button,
     ));
+
 }
 
 #[derive(Component)]
