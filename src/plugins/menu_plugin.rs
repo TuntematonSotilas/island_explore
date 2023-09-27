@@ -31,29 +31,27 @@ fn setup(
         .unwrap()
         .set_class_name("hide");
 
+	// Switch to an in-game cursor to show the player that they can click on things
+    
 	let idle = filters.load("/public/filter/invert.png");
-
-    // Switch to an in-game cursor to show the player that they can click on things
-    *cursor = PxCursor::Filter {
+	*cursor = PxCursor::Filter {
         idle: idle.clone(),
         left_click: filters.load("/public/filter/invert_dim.png"),
         right_click: idle,
     };
 
+	// Background
     let bkg = sprites.load("/public/sprite/bkg.png");
-
     commands.spawn(
         PxSpriteBundle ::<Layer> {
             sprite: bkg,
             position: IVec2::new(0, 0).into(),
-           // layers: PxFilterLayers::single_clip(Layer),
             ..Default::default()
         });
 
-    let button_idle = sprites.load("/public/sprite/button_idle.png");
-
     // Filter-based button
-    commands.spawn((
+    let button_idle = sprites.load("/public/sprite/button_idle.png");
+	commands.spawn((
         PxSpriteBundle::<Layer> {
             sprite: button_idle,
             position: IVec2::new(8, 12).into(),
