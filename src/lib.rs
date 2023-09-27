@@ -4,7 +4,6 @@ use wasm_bindgen::prelude::*;
 use bevy::prelude::*;
 use seldom_pixel::prelude::*;
 
-
 // ------ ------
 //     Start
 // ------ ------
@@ -19,10 +18,11 @@ pub fn start() {
 				}),
 				..default()
 			}),
-			PxPlugin::<Layer>::new(UVec2::splat(16), "/public/palette_1.png".into()),
+			PxPlugin::<Layer>::new(UVec2::splat(16), "/public/palette/palette_1.png".into()),
 		))
 		.insert_resource(ClearColor(Color::hex("#aad9ff").unwrap()))
 		.add_systems(Startup, setup)
+        .add_systems(Update, interact_buttons)
 		.run();
 }
 
@@ -35,7 +35,7 @@ fn setup(
 ) {
     commands.spawn(Camera2dBundle::default());
     
-    // hide loader
+    // Hide loader
     web_sys::window()
         .unwrap()
         .document()
@@ -44,14 +44,7 @@ fn setup(
         .unwrap()
         .set_class_name("hide");
 
-   // Circle
-   /*commands.spawn(MaterialMesh2dBundle {
-        mesh: meshes.add(shape::Circle::new(50.).into()).into(),
-        material: materials.add(ColorMaterial::from(Color::PURPLE)),
-        transform: Transform::from_translation(Vec3::new(-150., 0., 0.)),
-        ..default()
-    });*/
-	let idle = filters.load("filter/invert.png");
+	let idle = filters.load("/public/filter/invert.png");
 
     // Switch to an in-game cursor to show the player that they can click on things
     *cursor = PxCursor::Filter {
@@ -61,22 +54,6 @@ fn setup(
     };
 
     let button_idle = sprites.load("/public/sprite/button_idle.png");
-
-    // Sprite-based button
-    commands.spawn((
-        PxSpriteBundle::<Layer> {
-            sprite: button_idle.clone(),
-            position: IVec2::new(8, 4).into(),
-            ..default()
-        },
-        PxButtonSpriteBundle {
-            bounds: UVec2::new(8, 4).into(),
-            idle: button_idle.clone().into(),
-            hover: sprites.load("/public/sprite/button_hover.png").into(),
-            click: sprites.load("/public/sprite/button_click.png").into(),
-        },
-        Button,
-    ));
 
     // Filter-based button
     commands.spawn((
