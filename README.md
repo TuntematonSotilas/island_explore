@@ -1,6 +1,5 @@
-# xalkidiki
+# island_explore
 Game
-
 
 ## Install / check required tools
 Make sure you have basic tools installed:

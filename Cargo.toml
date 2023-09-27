@@ -1,11 +1,11 @@
 [package]
-name = "xalkidiki"
+name = "island_explore"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
 readme = "./README.md"
 description = "Game"
-repository = "https://github.com/TuntematonSotilas/xalkidiki"
+repository = "https://github.com/TuntematonSotilas/island_explore"
 
 [lib]
 crate-type = ["cdylib"]
