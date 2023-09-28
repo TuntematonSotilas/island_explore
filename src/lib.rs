@@ -23,6 +23,6 @@ pub fn start() {
 			}),
 			MenuPlugin
 		))
-		.insert_resource(ClearColor(Color::hex("#aad9ff").unwrap()))
+		.insert_resource(ClearColor(Color::hex("aad9ff").unwrap()))
 		.run();
 }
