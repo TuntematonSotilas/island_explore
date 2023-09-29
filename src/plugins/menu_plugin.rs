@@ -6,7 +6,7 @@ pub struct MenuPlugin;
 impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(
-			PxPlugin::<Layer>::new(UVec2::splat(16), "/public/palette/palette.png".into()),
+			PxPlugin::<Layer>::new(UVec2::splat(64), "/public/palette/palette.png".into()),
 		)
 		.add_systems(Startup, setup)
 		.add_systems(Update, interact_buttons);
@@ -53,11 +53,11 @@ fn setup(
 	commands.spawn((
         PxSpriteBundle::<Layer> {
             sprite: button_idle,
-            position: IVec2::new(8, 12).into(),
+            position: IVec2::new(32, 32).into(),
             ..default()
         },
         PxButtonFilterBundle {
-            bounds: UVec2::new(8, 4).into(),
+            bounds: UVec2::new(32, 8).into(),
             idle: filters.load("/public/palette/palette.png").into(),
             hover: filters.load("/public/filter/btnhover.png").into(),
             click: filters.load("/public/filter/btnclick.png").into(),
