@@ -19,6 +19,7 @@ fn setup(
     mut sprites: PxAssets<PxSprite>,
     mut filters: PxAssets<PxFilter>,
     mut cursor: ResMut<PxCursor>,
+	mut typefaces: PxAssets<PxTypeface>
 ) {
     commands.spawn(Camera2dBundle::default());
     
@@ -63,6 +64,33 @@ fn setup(
             click: filters.load("/public/filter/btnclick.png").into(),
         },
         Button,
+    ));
+
+	let typeface = typefaces.load_animated(
+        "/public/typeface/anim_typeface.png",
+        // See the function signature of `load_animated`
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ".chars().map(|character| {
+            (character, 2)
+        }),
+        // Equivalent to, for example, `vec![PxSeparatorConfig { character: ' ', width: 4 }]`
+        [(' ', 4)],
+    );
+
+    // Spawn text
+    commands.spawn((
+        PxTextBundle::<Layer> {
+            text: "ISL".into(),
+            typeface: typeface.clone(),
+            rect: IRect::new(IVec2::ZERO, IVec2::splat(64)).into(),
+            alignment: PxAnchor::Custom(Vec2::new(0.5,0.9)),
+            ..default()
+        },
+        PxAnimationBundle {
+            // Use millis_per_animation to have each character loop at the same time
+            duration: PxAnimationDuration::millis_per_frame(333),
+            on_finish: PxAnimationFinishBehavior::Loop,
+            ..default()
+        },
     ));
 
 }
