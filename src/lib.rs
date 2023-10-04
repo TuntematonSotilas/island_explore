@@ -4,8 +4,9 @@ extern crate wasm_bindgen;
 
 use bevy::prelude::*;
 use wasm_bindgen::prelude::*;
+use seldom_pixel::prelude::*;
 
-use plugins::menu_plugin::MenuPlugin;
+use plugins::{menu_plugin::MenuPlugin, map_plugin::MapPlugin};
 use states::AppState;
 
 mod plugins;
@@ -26,8 +27,13 @@ pub fn start() {
                 ..default()
             }),
             MenuPlugin,
+			MapPlugin,
         ))
         .add_state::<AppState>()
         .insert_resource(ClearColor(Color::hex("aad9ff").unwrap_or_default()))
         .run();
 }
+
+
+#[px_layer]
+struct Layer;

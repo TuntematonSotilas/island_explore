@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use seldom_pixel::prelude::*;
 
-use crate::states::AppState;
+use crate::{states::AppState, Layer};
 
 pub struct MenuPlugin;
 
@@ -119,5 +119,3 @@ fn exit(mut commands: Commands, query: Query<Entity, &Menu>) {
     }
 }
 
-#[px_layer]
-struct Layer;
