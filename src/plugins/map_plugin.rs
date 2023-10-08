@@ -21,12 +21,17 @@ fn setup(
 
     for x in 0..4 {
         for y in 0..4 {
+			let mut mx = x  % 2 ;
+			let my = y  % 2 ;
+			if my == 0 {
+				mx = mx + 1;
+			}
             // Each tile must be added to the `TileStorage`
             storage.set(
                 &TilePos { x, y },
                 commands
                     .spawn(PxTileBundle {
-                        texture: TileTextureIndex(0),
+                        texture: TileTextureIndex(mx),
                         ..default()
                     })
                     .id(),
@@ -35,7 +40,7 @@ fn setup(
     }
 
     // Spawn the map
-    commands.spawn(PxMapBundle::<MapLayer> {
+    commands.spawn(PxMapBundle::<Layer> {
         size: map_size,
         storage,
         tileset: tilesets.load("/public/tileset/tileset.png", UVec2::splat(4)),
@@ -43,5 +48,3 @@ fn setup(
     });
 }
 
-#[px_layer]
-struct MapLayer;

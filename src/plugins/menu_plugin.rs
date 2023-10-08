@@ -44,12 +44,12 @@ fn setup(
     };
 
     // Background
-    let bkg = sprites.load("/public/sprite/bkg.png");
-    commands.spawn(PxSpriteBundle::<Layer> {
-        sprite: bkg,
-        position: IVec2::new(0, 0).into(),
-        ..Default::default()
-    });
+    // let bkg = sprites.load("/public/sprite/bkg.png");
+    // commands.spawn(PxSpriteBundle::<Layer> {
+    //     sprite: bkg,
+    //     position: IVec2::new(0, 0).into(),
+    //     ..Default::default()
+    // });
 
     // Filter-based button
     let button_idle = sprites.load("/public/sprite/btn.png");
