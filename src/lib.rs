@@ -30,7 +30,7 @@ pub fn start() {
 			MapPlugin,
         ))
         .add_state::<AppState>()
-        .insert_resource(ClearColor(Color::hex("#ccc").unwrap_or_default()))
+        .insert_resource(ClearColor(Color::hex("#aad9ff").unwrap_or_default()))
         .run();
 }
 
