@@ -45,11 +45,20 @@ fn setup(
     }
 
     // Spawn the map
-    commands.spawn(PxMapBundle::<Layer> {
-        size: map_size,
-        storage,
-        tileset: tilesets.load("/public/tileset/tileset.png", UVec2::splat(8)),
-        ..default()
-    });
+    commands.spawn((
+		PxMapBundle::<Layer> {
+			size: map_size,
+			storage,
+			tileset: tilesets.load("/public/tileset/tileset.png", UVec2::splat(8)),
+			..default()
+		},
+		PxAnimationBundle {
+            // Use millis_per_animation to have each tile loop at the same time
+            duration: PxAnimationDuration::millis_per_frame(1000),
+            on_finish: PxAnimationFinishBehavior::Loop,
+			frame_transition: PxAnimationFrameTransition::None,
+            ..default()
+        }),
+	);
 }
 
