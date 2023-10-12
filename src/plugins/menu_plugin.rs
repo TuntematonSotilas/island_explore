@@ -52,10 +52,10 @@ fn setup(
             ..default()
         },
         PxButtonFilterBundle {
-            bounds: UVec2::new(32, 8).into(),
+            bounds: UVec2::new(31, 8).into(),
             idle: filters.load("/public/palette/palette.png").into(),
-            hover: filters.load("/public/filter/btnhover.png").into(),
-            click: filters.load("/public/filter/btnclick.png").into(),
+            hover: filters.load("/public/filter/inverse.png").into(),
+            click: filters.load("/public/filter/inverse.png").into(),
         },
         Button,
         Menu,

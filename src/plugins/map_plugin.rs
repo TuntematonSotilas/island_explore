@@ -21,15 +21,16 @@ fn setup(
 
     for x in 0..map_size.x {
         for y in 0..map_size.y {
-			let mx = x  % 2;
-			let my = y  % 2;
 
             let sea = x == 0 || y == 0 || x == 7 || y == 7;
-            let idx = if (mx == 0 && my == 0) || ( mx == 1 && my == 1) {
-                if sea { 2 } else { 0 }
+			let border = y == 1;
+            let idx = if sea {
+				0
+			} else if border {
+                2
             } else {
-                if sea { 3 } else { 1 }
-            };
+				1
+			};
 			
             // Each tile must be added to the `TileStorage`
             storage.set(
