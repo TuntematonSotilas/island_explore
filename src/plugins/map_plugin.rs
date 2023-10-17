@@ -23,11 +23,11 @@ fn setup(
         for y in 0..map_size.y {
 
             let sea = x == 0 || y == 0 || x == 7 || y == 7;
-			let border = y == 1 &&  (x == 1 ||  x == 2 ||  x == 3 ||  x == 4);
+			let border = y == 1 && x >= 1 && x <= 6;
             let idx = if sea {
 				0
 			} else if border {
-                x + 2
+                x + 1
             } else {
 				1
 			};
