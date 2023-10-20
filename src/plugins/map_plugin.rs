@@ -22,7 +22,7 @@ fn setup(
     for x in 0..map_size.x {
         for y in 0..map_size.y {
 
-            let isl = y >= 1 && y <= 2 && x >= 1 && x <= 6;
+            let isl = y >= 1 && y <= 5 && x >= 1 && x <= 6;
             let idx = if isl {
 				x + (6 * (y - 1))
 			} else {
