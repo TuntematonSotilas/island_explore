@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use seldom_pixel::prelude::*;
+use seldom_pixel::{prelude::*, cursor::PxCursorPosition};
 use bevy_ecs_tilemap::prelude::*;
 
 use crate::{states::AppState, Layer};
@@ -8,7 +8,8 @@ pub struct MapPlugin;
 
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(AppState::InGame), setup);
+        app.add_systems(OnEnter(AppState::InGame), setup)
+			.add_systems(Update, click);
     }
 }
 
@@ -60,3 +61,21 @@ fn setup(
 	);
 }
 
+pub fn click(
+	cursor_pos: Res<PxCursorPosition>,
+    //windows_q: Query<&Window, With<PrimaryWindow>>,
+    buttons: Res<Input<MouseButton>>,
+    //mut cursor_state: ResMut<CursorState>,
+    //camera_q: Query<(&Camera, &GlobalTransform), With<Camera2d>>,
+    //tilemap_q: Query<(&Transform, &TilemapSize, &TilemapGridSize, &TilemapType)>,
+) {
+	if buttons.just_released(MouseButton::Left) {
+
+		warn!("click");
+
+		if let Some(cur_pos) = **cursor_pos {
+			
+			warn!("click : {0} {1}", cur_pos.x, cur_pos.y);
+		}
+	}
+}
