@@ -15,35 +15,12 @@ fn setup(
 	mut commands: Commands, 
 	mut sprites: PxAssets<PxSprite>,
 ) {
-	let runner = sprites.load_animated("/public/sprite/runner.png", 8);
-    // Despawn at the end
+	let runner = sprites.load_animated("/public/sprite/runner.png", 2);
+    
     commands.spawn((
         PxSpriteBundle::<Layer> {
             sprite: runner.clone(),
-            anchor: PxAnchor::BottomLeft,
-            ..default()
-        },
-        PxAnimationBundle::default(),
-    ));
-    // Add the `PxAnimationFinished` component at the end
-    commands.spawn((
-        PxSpriteBundle::<Layer> {
-            sprite: runner.clone(),
-            position: IVec2::new(13, 0).into(),
-            anchor: PxAnchor::BottomLeft,
-            ..default()
-        },
-        PxAnimationBundle {
-            on_finish: PxAnimationFinishBehavior::Mark,
-            ..default()
-        },
-    ));
-     // Loop
-     commands.spawn((
-        PxSpriteBundle::<Layer> {
-            sprite: runner.clone(),
-            position: IVec2::new(26, 0).into(),
-            anchor: PxAnchor::BottomLeft,
+            position: IVec2::new(32, 32).into(),
             ..default()
         },
         PxAnimationBundle {
@@ -51,35 +28,7 @@ fn setup(
             ..default()
         },
     ));
-    // Backward
-    commands.spawn((
-        PxSpriteBundle::<Layer> {
-            sprite: runner.clone(),
-            position: IVec2::new(39, 0).into(),
-            anchor: PxAnchor::BottomLeft,
-            ..default()
-        },
-        PxAnimationBundle {
-            direction: PxAnimationDirection::Backward,
-            on_finish: PxAnimationFinishBehavior::Loop,
-            ..default()
-        },
-    ));
-    // Dither between frames
-    commands.spawn((
-        PxSpriteBundle::<Layer> {
-            sprite: runner,
-            position: IVec2::new(39, 18).into(),
-            anchor: PxAnchor::BottomLeft,
-            ..default()
-        },
-        PxAnimationBundle {
-            on_finish: PxAnimationFinishBehavior::Loop,
-            frame_transition: PxAnimationFrameTransition::Dither,
-            ..default()
-        },
-    ));
-
+	
 
 }
 
