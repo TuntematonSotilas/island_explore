@@ -6,7 +6,7 @@ use bevy::prelude::*;
 use wasm_bindgen::prelude::*;
 use seldom_pixel::prelude::*;
 
-use plugins::{menu_plugin::MenuPlugin, map_plugin::MapPlugin};
+use plugins::{menu_plugin::MenuPlugin, map_plugin::MapPlugin, player_plugin::PlayerPlugin};
 use states::AppState;
 
 mod plugins;
@@ -35,6 +35,7 @@ pub fn start() {
             }),
             MenuPlugin,
 			MapPlugin,
+            PlayerPlugin,
         ))
         .add_state::<AppState>()
         .insert_resource(ClearColor(Color::hex("#1f93ac").unwrap_or_default()))
