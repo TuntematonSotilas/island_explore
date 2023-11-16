@@ -15,7 +15,7 @@ fn setup(
 	mut commands: Commands, 
 	mut sprites: PxAssets<PxSprite>,
 ) {
-	let runner = sprites.load_animated("/public/sprite/runner.png", 2);
+	let runner = sprites.load_animated("/public/sprite/player.png", 2);
     
     commands.spawn((
         PxSpriteBundle::<Layer> {
