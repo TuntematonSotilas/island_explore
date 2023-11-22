@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use seldom_pixel::{prelude::*, cursor::PxCursorPosition};
 use bevy_ecs_tilemap::prelude::*;
 
-use crate::{states::AppState, Layer};
+use crate::{states::AppState, Layer, Player};
 
 pub struct MapPlugin;
 
@@ -25,9 +25,9 @@ fn setup(
 
             let isl = y >= 1 && y <= 5 && x >= 1 && x <= 6;
             let idx = if isl {
-				x + (6 * (y - 1))
+				x + (6 * (y - 1)) // Island
 			} else {
-				0
+				0 //Sea
 			};
 			
             // Each tile must be added to the `TileStorage`
@@ -63,19 +63,24 @@ fn setup(
 
 pub fn click(
 	cursor_pos: Res<PxCursorPosition>,
-    //windows_q: Query<&Window, With<PrimaryWindow>>,
     buttons: Res<Input<MouseButton>>,
-    //mut cursor_state: ResMut<CursorState>,
-    //camera_q: Query<(&Camera, &GlobalTransform), With<Camera2d>>,
-    //tilemap_q: Query<(&Transform, &TilemapSize, &TilemapGridSize, &TilemapType)>,
+	mut player_q: Query<&mut PxPosition, With<Player>>,
 ) {
 	if buttons.just_released(MouseButton::Left) {
-
+		
 		warn!("click");
 
 		if let Some(cur_pos) = **cursor_pos {
-			
+
+
 			warn!("click : {0} {1}", cur_pos.x, cur_pos.y);
+
+			let mut player_pos = player_q.single_mut();
+			**player_pos = IVec2::new(cur_pos.x as i32, cur_pos.y as i32);
+
+			//warn!("player_pos : {0} {1}", player_pos.x, player_pos.y);
+			
+
 		}
 	}
 }

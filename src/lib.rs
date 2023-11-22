@@ -63,3 +63,6 @@ fn get_window_size() -> (f32, f32) {
 
 #[px_layer]
 struct Layer;
+
+#[derive(Component)]
+struct Player;

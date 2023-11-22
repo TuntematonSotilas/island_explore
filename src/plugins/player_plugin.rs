@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use seldom_pixel::prelude::*;
 
-use crate::{states::AppState, Layer};
+use crate::{states::AppState, Layer, Player};
 
 pub struct PlayerPlugin;
 
@@ -23,12 +23,12 @@ fn setup(
             position: IVec2::new(32, 32).into(),
             ..default()
         },
-        PxAnimationBundle {
+		Player
+        /*PxAnimationBundle {
             on_finish: PxAnimationFinishBehavior::Loop,
             ..default()
-        },
+        },*/
     ));
 	
 
 }
-
