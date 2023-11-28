@@ -1,6 +1,9 @@
+use std::time::Duration;
+
 use bevy::prelude::*;
 use seldom_pixel::{prelude::*, cursor::PxCursorPosition};
 use bevy_ecs_tilemap::prelude::*;
+use bevy::time::common_conditions::on_timer;
 
 use crate::{states::AppState, Layer, Player};
 
@@ -9,13 +12,16 @@ pub struct MapPlugin;
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(AppState::InGame), setup)
-			.add_systems(Update, click);
+			.add_systems(Update, (click) //.run_if(on_timer(Duration::from_millis(100))));
+                .run_if(in_state(AppState::MapLoaded)));
+
     }
 }
 
 fn setup(
 	mut commands: Commands, 
 	mut tilesets: PxAssets<PxTileset>,
+    mut next_state: ResMut<NextState<AppState>>
 ) {
 	let map_size = TilemapSize { x: 8, y: 8 };
     let mut storage = TileStorage::empty(map_size);
@@ -59,7 +65,15 @@ fn setup(
             ..default()
         }),
 	);
+
+    next_state.set(AppState::MapLoaded);
+
 }
+
+pub fn set_map_loaded(mut next_state: ResMut<NextState<AppState>>) {
+    
+}
+
 
 pub fn click(
 	cursor_pos: Res<PxCursorPosition>,
