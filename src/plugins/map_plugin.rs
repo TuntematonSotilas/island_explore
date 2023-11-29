@@ -1,4 +1,4 @@
-use bevy::{prelude::*, time::Stopwatch};
+use bevy::prelude::*;
 use seldom_pixel::{prelude::*, cursor::PxCursorPosition};
 use bevy_ecs_tilemap::prelude::*;
 
@@ -9,7 +9,7 @@ pub struct MapPlugin;
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(AppState::InGame), setup)
-			.add_systems(Update, click);
+			.add_systems(Update, (click).run_if(in_state(AppState::InGame)));
 
     }
 }
@@ -52,7 +52,6 @@ fn setup(
 			tileset: tilesets.load("/public/tileset/tileset.png", UVec2::splat(8)),
 			..default()
 		},
-        SpawnDuration { time : Stopwatch::new() },
 		PxAnimationBundle {
             // Use millis_per_animation to have each tile loop at the same time
             duration: PxAnimationDuration::millis_per_frame(1000),
@@ -63,27 +62,15 @@ fn setup(
     ));
 }
 
-#[derive(Component)]
-struct SpawnDuration {
-    time: Stopwatch,
-}
-
 fn click(
 	cursor_pos: Res<PxCursorPosition>,
     buttons: Res<Input<MouseButton>>,
 	mut player_q: Query<&mut PxPosition, With<Player>>,
-    map_spawn_q: Query<&SpawnDuration>,
 ) {
 	if buttons.just_released(MouseButton::Left) {
 		
 		info!("click");
         
-        let map_spawn = map_spawn_q.single();
-
-
-        info!("Jumping for {} seconds.", map_spawn.time.elapsed_secs());
-
-
 		if let Some(cur_pos) = **cursor_pos {
 
 
