@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, time::Stopwatch};
 use seldom_pixel::{prelude::*, cursor::PxCursorPosition};
 use bevy_ecs_tilemap::prelude::*;
 
@@ -52,34 +52,47 @@ fn setup(
 			tileset: tilesets.load("/public/tileset/tileset.png", UVec2::splat(8)),
 			..default()
 		},
+        SpawnDuration { time : Stopwatch::new() },
 		PxAnimationBundle {
             // Use millis_per_animation to have each tile loop at the same time
             duration: PxAnimationDuration::millis_per_frame(1000),
             on_finish: PxAnimationFinishBehavior::Loop,
 			frame_transition: PxAnimationFrameTransition::None,
             ..default()
-        }),
-	);
+        },
+    ));
 }
 
-pub fn click(
+#[derive(Component)]
+struct SpawnDuration {
+    time: Stopwatch,
+}
+
+fn click(
 	cursor_pos: Res<PxCursorPosition>,
     buttons: Res<Input<MouseButton>>,
 	mut player_q: Query<&mut PxPosition, With<Player>>,
+    map_spawn_q: Query<&SpawnDuration>,
 ) {
 	if buttons.just_released(MouseButton::Left) {
 		
-		warn!("click");
+		info!("click");
+        
+        let map_spawn = map_spawn_q.single();
+
+
+        info!("Jumping for {} seconds.", map_spawn.time.elapsed_secs());
+
 
 		if let Some(cur_pos) = **cursor_pos {
 
 
-			warn!("click : {0} {1}", cur_pos.x, cur_pos.y);
+			info!("click : {0} {1}", cur_pos.x, cur_pos.y);
 
 			let mut player_pos = player_q.single_mut();
 			**player_pos = IVec2::new(cur_pos.x as i32, cur_pos.y as i32);
 
-			//warn!("player_pos : {0} {1}", player_pos.x, player_pos.y);
+			//info!("player_pos : {0} {1}", player_pos.x, player_pos.y);
 			
 
 		}
