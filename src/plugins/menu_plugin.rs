@@ -61,29 +61,42 @@ fn setup(
         Menu,
     ));
 
-    let typeface = typefaces.load_animated(
-        "/public/typeface/anim_typeface.png",
+    /*let typeface_bold = typefaces.load(
+        "/public/typeface/typeface_bold.png",
         // See the function signature of `load_animated`
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            .chars()
-            .map(|character| (character, 2)),
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
         // Equivalent to, for example, `vec![PxSeparatorConfig { character: ' ', width: 4 }]`
         [(' ', 4)],
     );
 
-    // Spawn text
     commands.spawn((
         PxTextBundle::<Layer> {
-            text: "ISL".into(),
-            typeface,
+            text: "ISLAND".into(),
+            typeface: typeface_bold,
             rect: IRect::new(IVec2::ZERO, IVec2::splat(64)).into(),
             alignment: PxAnchor::Custom(Vec2::new(0.5, 0.9)),
             ..default()
         },
-        PxAnimationBundle {
-            // Use millis_per_animation to have each character loop at the same time
-            duration: PxAnimationDuration::millis_per_frame(333),
-            on_finish: PxAnimationFinishBehavior::Loop,
+        Menu,
+    ));*/
+
+    let typeface = typefaces.load(
+        "/public/typeface/typeface.png",
+        // See the function signature of `load_animated`
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        // Equivalent to, for example, `vec![PxSeparatorConfig { character: ' ', width: 4 }]`
+        [(' ', 4)],
+    );
+
+    
+    // Spawn text
+
+    commands.spawn((
+        PxTextBundle::<Layer> {
+            text: "ZZZZ".into(),
+            typeface,
+            rect: IRect::new(IVec2::ZERO, IVec2::splat(64)).into(),
+            alignment: PxAnchor::Custom(Vec2::new(0.5, 0.9)),
             ..default()
         },
         Menu,
