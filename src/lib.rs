@@ -65,4 +65,7 @@ fn get_window_size() -> (f32, f32) {
 struct Layer;
 
 #[derive(Component)]
-struct Player;
+struct Player 
+{
+    dest: IVec2
+}

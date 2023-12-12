@@ -65,19 +65,16 @@ fn setup(
 fn click(
 	cursor_pos: Res<PxCursorPosition>,
     buttons: Res<Input<MouseButton>>,
-	mut player_q: Query<&mut PxPosition, With<Player>>,
+	mut player_q: Query<&mut Player>,
 ) {
 	if buttons.just_released(MouseButton::Left) {
 		
-		info!("click");
-        
 		if let Some(cur_pos) = **cursor_pos {
 
+			debug!("click : {0} {1}", cur_pos.x, cur_pos.y);
 
-			info!("click : {0} {1}", cur_pos.x, cur_pos.y);
-
-			let mut player_pos = player_q.single_mut();
-			**player_pos = IVec2::new(cur_pos.x as i32, cur_pos.y as i32);
+			let mut player = player_q.single_mut();
+			player.dest = IVec2::new(cur_pos.x as i32, cur_pos.y as i32);
 
 			//info!("player_pos : {0} {1}", player_pos.x, player_pos.y);
 			
