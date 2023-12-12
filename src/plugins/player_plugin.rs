@@ -24,7 +24,7 @@ fn setup(
             position: IVec2::new(32, 32).into(),
             ..default()
         },
-		Player { dest: IVec2::new(32,32) }
+		Player { dest: IVec2::new(32,32), time: 0. }
         /*PxAnimationBundle {
             on_finish: PxAnimationFinishBehavior::Loop,
             ..default()
@@ -35,33 +35,41 @@ fn setup(
 
 fn move_player(
     time: Res<Time>,
-    mut player_q: Query<(&Player, &mut PxPosition), With<Player>>) {
+    mut player_q: Query<(&mut Player, &mut PxPosition), With<Player>>) {
 
-    let (player, mut pos) = player_q.single_mut();
+    let (mut player, mut pos) = player_q.single_mut();
     
+
     if !pos.eq(&player.dest)
     {
-        debug!("move");
-		// move our asteroids along the X axis
-        // at a speed of 1.0 units per second
+		
+        //info!("move");
 
-		let inc = (1. * time.delta_seconds()) as i32;
+		let time = time.delta_seconds();
+		player.time += time;
+		
+		if player.time > 0.1 {
 
-		debug!("inc {0}", inc);
+			//info!("pos {0},{1} / dest {2}/{3}", pos.x, pos.y, player.dest.x, player.dest.y);
 
-		let x = if player.dest.x > pos.x {
-			pos.x + inc
-		} else {
-			pos.x - inc
-		};
-		let y = if player.dest.y > pos.y {
-			pos.y + inc
-		} else {
-			pos.y - inc
-		};
-        
-		debug!("x/y {0},{1}", x, y);
-
-        **pos = IVec2::new(x, y);
+			let x = if player.dest.x > pos.x {
+				pos.x + 1
+			} else if player.dest.x < pos.x {
+				pos.x - 1
+			} else {
+				pos.x
+			};
+			let y = if player.dest.y > pos.y {
+				pos.y + 1
+			} else if player.dest.y < pos.y {
+				pos.y - 1
+			} else {
+				pos.y
+			};
+			
+			**pos = IVec2::new(x, y);
+			player.time = 0.;
+		}
+		
     }
 }

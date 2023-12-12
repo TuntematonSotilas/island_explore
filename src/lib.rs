@@ -67,5 +67,6 @@ struct Layer;
 #[derive(Component)]
 struct Player 
 {
-    dest: IVec2
+    dest: IVec2,
+	time: f32,
 }

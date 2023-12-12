@@ -71,7 +71,7 @@ fn click(
 		
 		if let Some(cur_pos) = **cursor_pos {
 
-			debug!("click : {0} {1}", cur_pos.x, cur_pos.y);
+			info!("click : {0} {1}", cur_pos.x, cur_pos.y);
 
 			let mut player = player_q.single_mut();
 			player.dest = IVec2::new(cur_pos.x as i32, cur_pos.y as i32);
