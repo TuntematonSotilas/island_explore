@@ -34,7 +34,7 @@ fn setup(
 
 
 fn move_player(
-    //player_q: Query<&Player>, // TODO : group query
+    time: Res<Time>,
     mut player_q: Query<(&Player, &mut PxPosition), With<Player>>) {
 
     let (player, mut pos) = player_q.single_mut();
@@ -42,7 +42,26 @@ fn move_player(
     if !pos.eq(&player.dest)
     {
         debug!("move");
+		// move our asteroids along the X axis
+        // at a speed of 1.0 units per second
 
-        **pos = player.dest;
+		let inc = (1. * time.delta_seconds()) as i32;
+
+		debug!("inc {0}", inc);
+
+		let x = if player.dest.x > pos.x {
+			pos.x + inc
+		} else {
+			pos.x - inc
+		};
+		let y = if player.dest.y > pos.y {
+			pos.y + inc
+		} else {
+			pos.y - inc
+		};
+        
+		debug!("x/y {0},{1}", x, y);
+
+        **pos = IVec2::new(x, y);
     }
 }

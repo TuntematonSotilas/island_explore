@@ -75,10 +75,6 @@ fn click(
 
 			let mut player = player_q.single_mut();
 			player.dest = IVec2::new(cur_pos.x as i32, cur_pos.y as i32);
-
-			//info!("player_pos : {0} {1}", player_pos.x, player_pos.y);
-			
-
 		}
 	}
 }
