@@ -61,7 +61,9 @@ fn setup(
         Menu,
     ));
 
-    /*let typeface_bold = typefaces.load(
+    // Spawn text
+
+    let typeface_bold = typefaces.load(
         "/public/typeface/typeface_bold.png",
         // See the function signature of `load_animated`
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
@@ -78,7 +80,7 @@ fn setup(
             ..default()
         },
         Menu,
-    ));*/
+    ));
 
     let typeface = typefaces.load(
         "/public/typeface/typeface.png",
@@ -88,15 +90,12 @@ fn setup(
         [(' ', 4)],
     );
 
-    
-    // Spawn text
-
     commands.spawn((
         PxTextBundle::<Layer> {
-            text: "ZZZZ".into(),
+            text: "EXPLORE".into(),
             typeface,
             rect: IRect::new(IVec2::ZERO, IVec2::splat(64)).into(),
-            alignment: PxAnchor::Custom(Vec2::new(0.5, 0.9)),
+            alignment: PxAnchor::Custom(Vec2::new(0.5, 0.7)),
             ..default()
         },
         Menu,
