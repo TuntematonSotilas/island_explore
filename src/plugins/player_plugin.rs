@@ -23,7 +23,11 @@ fn setup(
             position: IVec2::new(32, 32).into(),
             ..default()
         },
-		Player { dest: IVec2::new(32,32), time: 0. }
+		Player { 
+			dest: IVec2::new(32,32), 
+			time: 0., 
+			moving: false 
+		}
     ));
 }
 
@@ -34,12 +38,8 @@ fn move_player(
 
     let (mut player, mut pos) = player_q.single_mut();
     
-
     if !pos.eq(&player.dest)
     {
-		
-        //info!("move");
-
 		let time = time.delta_seconds();
 		player.time += time;
 		
@@ -65,6 +65,7 @@ fn move_player(
 			**pos = IVec2::new(x, y);
 			player.time = 0.;
 		}
-		
-    }
+    } else if player.moving {
+		player.moving = false;
+	}
 }

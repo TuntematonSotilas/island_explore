@@ -68,30 +68,45 @@ fn click(
     buttons: Res<Input<MouseButton>>,
 	mut player_q: Query<&mut Player>,
     mut sprites: PxAssets<PxSprite>,
+    mapclick_q: Query<Entity, &MapClick>,
 ) {
+
 	if buttons.just_released(MouseButton::Left) {
+
+        let mut player = player_q.single_mut();
+        
+        // Only when player not moving 
+        if !player.moving {
+
+            // Remove Map Click Sprite
+            if !mapclick_q.is_empty() {
+                let mapclick = mapclick_q.single();
+                commands.entity(mapclick).despawn();
+            }    
+            
+            if let Some(cur_pos) = **cursor_pos {
+
+                let x = cur_pos.x;
+                let y = cur_pos.y;
+                let dest = IVec2::new(x as i32, y as i32);
+    
+                info!("click : {0} {1}", x, y);
+    
+                // Spawn Map Click Sprite
+                let mapclick = sprites.load("/public/sprite/mapclick.png");
+                commands.spawn((
+                    PxSpriteBundle::<Layer> {
+                        sprite: mapclick,
+                        position: dest.into(),
+                        ..default()
+                    },
+                    MapClick
+                ));
+
+                player.moving = true;
+                player.dest = dest;
+            }
+        }
 		
-		if let Some(cur_pos) = **cursor_pos {
-
-            let x = cur_pos.x;
-            let y = cur_pos.y;
-            let dest = IVec2::new(x as i32, y as i32);
-
-			info!("click : {0} {1}", x, y);
-
-            // Spawn Map Click Sprite
-            let mapclick = sprites.load("/public/sprite/mapclick.png");
-            commands.spawn((
-                PxSpriteBundle::<Layer> {
-                    sprite: mapclick,
-                    position: dest.into(),
-                    ..default()
-                },
-                MapClick
-            ));
-
-			let mut player = player_q.single_mut();
-			player.dest = dest;
-		}
 	}
 }
