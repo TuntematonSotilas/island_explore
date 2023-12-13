@@ -65,7 +65,6 @@ fn setup(
 
     let typeface_bold = typefaces.load(
         "/public/typeface/typeface_bold.png",
-        // See the function signature of `load_animated`
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
         // Equivalent to, for example, `vec![PxSeparatorConfig { character: ' ', width: 4 }]`
         [(' ', 4)],
@@ -84,7 +83,6 @@ fn setup(
 
     let typeface = typefaces.load(
         "/public/typeface/typeface.png",
-        // See the function signature of `load_animated`
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
         // Equivalent to, for example, `vec![PxSeparatorConfig { character: ' ', width: 4 }]`
         [(' ', 4)],

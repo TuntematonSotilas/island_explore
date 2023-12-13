@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use seldom_pixel::{prelude::*, cursor::PxCursorPosition};
 use bevy_ecs_tilemap::prelude::*;
 
-use crate::{states::AppState, Layer, Player};
+use crate::{states::AppState, Layer, components::Player, components::MapClick};
 
 pub struct MapPlugin;
 
@@ -63,18 +63,35 @@ fn setup(
 }
 
 fn click(
+    mut commands: Commands, 
 	cursor_pos: Res<PxCursorPosition>,
     buttons: Res<Input<MouseButton>>,
 	mut player_q: Query<&mut Player>,
+    mut sprites: PxAssets<PxSprite>,
 ) {
 	if buttons.just_released(MouseButton::Left) {
 		
 		if let Some(cur_pos) = **cursor_pos {
 
-			info!("click : {0} {1}", cur_pos.x, cur_pos.y);
+            let x = cur_pos.x;
+            let y = cur_pos.y;
+            let dest = IVec2::new(x as i32, y as i32);
+
+			info!("click : {0} {1}", x, y);
+
+            // Spawn Map Click Sprite
+            let mapclick = sprites.load("/public/sprite/mapclick.png");
+            commands.spawn((
+                PxSpriteBundle::<Layer> {
+                    sprite: mapclick,
+                    position: dest.into(),
+                    ..default()
+                },
+                MapClick
+            ));
 
 			let mut player = player_q.single_mut();
-			player.dest = IVec2::new(cur_pos.x as i32, cur_pos.y as i32);
+			player.dest = dest;
 		}
 	}
 }

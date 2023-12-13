@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use seldom_pixel::prelude::*;
 
-use crate::{states::AppState, Layer, Player};
+use crate::{states::AppState, Layer, components::Player};
 
 pub struct PlayerPlugin;
 
@@ -16,19 +16,14 @@ fn setup(
 	mut commands: Commands, 
 	mut sprites: PxAssets<PxSprite>,
 ) {
-	let runner = sprites.load_animated("/public/sprite/player.png", 2);
-    
+	let player = sprites.load("/public/sprite/player.png");
     commands.spawn((
         PxSpriteBundle::<Layer> {
-            sprite: runner.clone(),
+            sprite: player,
             position: IVec2::new(32, 32).into(),
             ..default()
         },
 		Player { dest: IVec2::new(32,32), time: 0. }
-        /*PxAnimationBundle {
-            on_finish: PxAnimationFinishBehavior::Loop,
-            ..default()
-        },*/
     ));
 }
 

@@ -11,6 +11,7 @@ use states::AppState;
 
 mod plugins;
 mod states;
+mod components;
 
 // ------ ------
 //     Start
@@ -63,10 +64,3 @@ fn get_window_size() -> (f32, f32) {
 
 #[px_layer]
 struct Layer;
-
-#[derive(Component)]
-struct Player 
-{
-    dest: IVec2,
-	time: f32,
-}
