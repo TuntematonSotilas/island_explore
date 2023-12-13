@@ -9,7 +9,7 @@ pub struct MapPlugin;
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(AppState::InGame), setup)
-			.add_systems(Update, (click).run_if(in_state(AppState::InGame)));
+			.add_systems(Update, (click, mapclick_hide).run_if(in_state(AppState::InGame)));
 
     }
 }
@@ -62,13 +62,25 @@ fn setup(
     ));
 }
 
+fn mapclick_hide(
+	mut commands: Commands,
+	player_q: Query<&Player>,
+    mapclick_q: Query<Entity, &MapClick>,
+) {	
+	let player = player_q.single();
+	// Remove Map Click Sprite
+	if !player.moving && !mapclick_q.is_empty() {
+		let mapclick = mapclick_q.single();
+		commands.entity(mapclick).despawn();
+	}    
+}
+
 fn click(
     mut commands: Commands, 
 	cursor_pos: Res<PxCursorPosition>,
     buttons: Res<Input<MouseButton>>,
 	mut player_q: Query<&mut Player>,
     mut sprites: PxAssets<PxSprite>,
-    mapclick_q: Query<Entity, &MapClick>,
 ) {
 
 	if buttons.just_released(MouseButton::Left) {
@@ -77,12 +89,6 @@ fn click(
         
         // Only when player not moving 
         if !player.moving {
-
-            // Remove Map Click Sprite
-            if !mapclick_q.is_empty() {
-                let mapclick = mapclick_q.single();
-                commands.entity(mapclick).despawn();
-            }    
             
             if let Some(cur_pos) = **cursor_pos {
 
