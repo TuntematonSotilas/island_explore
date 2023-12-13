@@ -93,8 +93,9 @@ fn click(
             
             if let Some(cur_pos) = **cursor_pos {
 
-                let x = cur_pos.x;
-                let y = cur_pos.y;
+				//Get center of the clicked tile
+                let x = ((cur_pos.x as f64 / 8.).ceil() as i32) * 8 - 4;
+                let y = ((cur_pos.y as f64 / 8.).ceil() as i32) * 8 - 4;
                 let dest = IVec2::new(x as i32, y as i32);
     
                 info!("click : {0} {1}", x, y);
