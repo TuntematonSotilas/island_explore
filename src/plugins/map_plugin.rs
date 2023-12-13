@@ -9,7 +9,8 @@ pub struct MapPlugin;
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(AppState::InGame), setup)
-			.add_systems(Update, (click, mapclick_hide).run_if(in_state(AppState::InGame)));
+			.add_systems(Update, (click, despawn_mapclick)
+				.run_if(in_state(AppState::InGame)));
 
     }
 }
@@ -62,7 +63,7 @@ fn setup(
     ));
 }
 
-fn mapclick_hide(
+fn despawn_mapclick(
 	mut commands: Commands,
 	player_q: Query<&Player>,
     mapclick_q: Query<Entity, &MapClick>,
