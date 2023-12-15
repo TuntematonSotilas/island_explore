@@ -98,8 +98,6 @@ fn click(
                 let y = ((cur_pos.y as f64 / 8.).ceil() as i32) * 8 - 4;
                 let dest = IVec2::new(x as i32, y as i32);
     
-                info!("click : {0} {1}", x, y);
-    
                 // Spawn Map Click Sprite
                 let mapclick = sprites.load("/public/sprite/mapclick.png");
                 commands.spawn((
