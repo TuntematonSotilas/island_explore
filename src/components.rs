@@ -10,3 +10,9 @@ pub struct Player
 
 #[derive(Component)]
 pub struct MapClick;
+
+#[derive(Component)]
+pub struct TileType 
+{
+    pub clickable: bool,
+}

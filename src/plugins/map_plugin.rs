@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use seldom_pixel::{prelude::*, cursor::PxCursorPosition};
 use bevy_ecs_tilemap::prelude::*;
 
-use crate::{states::AppState, Layer, components::Player, components::MapClick};
+use crate::{states::AppState, Layer, components::{Player, TileType}, components::MapClick};
 
 pub struct MapPlugin;
 
@@ -36,10 +36,13 @@ fn setup(
             storage.set(
                 &TilePos { x, y },
                 commands
-                    .spawn(PxTileBundle {
-                        texture: TileTextureIndex(idx),
-                        ..default()
-                    })
+                    .spawn((
+                        PxTileBundle {
+                            texture: TileTextureIndex(idx),
+                            ..default()
+                        },
+                        TileType { clickable: isl })
+                    )
                     .id(),
             );
         }
@@ -82,10 +85,13 @@ fn click(
     buttons: Res<Input<MouseButton>>,
 	mut player_q: Query<&mut Player>,
     mut sprites: PxAssets<PxSprite>,
+    tilemap_q: Query<&TileStorage>,
+    tile_query: Query<&mut TileType>,
 ) {
 
 	if buttons.just_released(MouseButton::Left) {
 
+        let tile_storage = tilemap_q.single();
         let mut player = player_q.single_mut();
         
         // Only when player not moving 
@@ -97,22 +103,34 @@ fn click(
                 let x = ((cur_pos.x as f64 / 8.).ceil() as i32) * 8 - 4;
                 let y = ((cur_pos.y as f64 / 8.).ceil() as i32) * 8 - 4;
                 let dest = IVec2::new(x as i32, y as i32);
-    
-                // Spawn Map Click Sprite
-                let mapclick = sprites.load("/public/sprite/mapclick.png");
-                commands.spawn((
-                    PxSpriteBundle::<Layer> {
-                        sprite: mapclick,
-                        position: dest.into(),
-                        ..default()
-                    },
-                    MapClick
-                ));
+                
+                let tile_x = x as u32 / 8;
+                let tile_y = y as u32 / 8;
 
-                player.moving = true;
-                player.dest = dest;
+                let mut clickable: bool = false;
+                let tile_pos = TilePos { x: tile_x, y: tile_y };
+                if let Some(tile_entity) = tile_storage.get(&tile_pos) {
+                    if let Ok(tile_type) = tile_query.get(tile_entity) {
+                        clickable = tile_type.clickable;
+                    }
+                };
+
+                if clickable {
+                    // Spawn Map Click Sprite
+                    let mapclick = sprites.load("/public/sprite/mapclick.png");
+                    commands.spawn((
+                        PxSpriteBundle::<Layer> {
+                            sprite: mapclick,
+                            position: dest.into(),
+                            ..default()
+                        },
+                        MapClick
+                    ));
+
+                    player.moving = true;
+                    player.dest = dest;
+                }
             }
         }
-		
 	}
 }
