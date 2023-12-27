@@ -26,19 +26,20 @@ fn setup(
         let modu_x = x % 2;
         for y in 0..map_size.y {    
             let modu_y = y % 2;
-            let modu = if modu_x == modu_y {
+            let modu = if modu_x == modu_y { 0 } else { 1 };
+            let sea = x == 0 || x == 7 || y == 0 || y == 7;
+            let border_bott = y == 0 && x != 0 && x != 7;
+            let border_left = x == 0 && y != 0 && y != 7;
+            let mut isl = false;
+            let idx = if border_left { 
+                4 
+            } else if border_bott {
+                3
+            } else if sea {
                 0
             } else {
-                1
-            };
-            let isl = y >= 1 && y <= 6 && x >= 1 && x <= 6;
-            let border_top = y == 1;
-            let idx = if isl && border_top {
-                3 + modu 
-            } else if isl {
+                isl = true;
 				1 + modu 
-			} else {
-				0 //Sea
 			};
 			
             // Each tile must be added to the `TileStorage`
