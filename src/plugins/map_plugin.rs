@@ -23,11 +23,20 @@ fn setup(
     let mut storage = TileStorage::empty(map_size);
 
     for x in 0..map_size.x {
-        for y in 0..map_size.y {
-
-            let isl = y >= 1 && y <= 5 && x >= 1 && x <= 6;
-            let idx = if isl {
-				x + (6 * (y - 1)) // Island
+        let modu_x = x % 2;
+        for y in 0..map_size.y {    
+            let modu_y = y % 2;
+            let modu = if modu_x == modu_y {
+                0
+            } else {
+                1
+            };
+            let isl = y >= 1 && y <= 6 && x >= 1 && x <= 6;
+            let border_top = y == 1;
+            let idx = if isl && border_top {
+                3 + modu 
+            } else if isl {
+				1 + modu 
 			} else {
 				0 //Sea
 			};
