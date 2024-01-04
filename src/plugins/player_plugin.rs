@@ -27,7 +27,7 @@ fn setup(
 			dest: IVec2::new(32,32), 
 			time: 0., 
 			moving: false,
-			go_next_map: false,
+			next_map: false,
 		}
     ));
 }
@@ -45,8 +45,6 @@ fn move_player(
 		player.time += time;
 		
 		if player.time > 0.1 {
-
-			//info!("pos {0},{1} / dest {2}/{3}", pos.x, pos.y, player.dest.x, player.dest.y);
 
 			let x = if player.dest.x > pos.x {
 				pos.x + 1
@@ -68,5 +66,9 @@ fn move_player(
 		}
     } else if player.moving {
 		player.moving = false;
+		let tile_x = player.dest.x as u32 / 8;
+		if tile_x == 7 {
+			player.next_map = true;
+		}
 	}
 }

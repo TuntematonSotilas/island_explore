@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use seldom_pixel::{prelude::*, cursor::PxCursorPosition};
 use bevy_ecs_tilemap::prelude::*;
 
-use crate::{states::AppState, Layer, components::{Player, TileType}, components::MapClick};
+use crate::{states::AppState, Layer, components::{Map, Player, TileType}, components::{MapClick, MapIdx}};
 
 pub struct MapPlugin;
 
@@ -16,10 +16,18 @@ impl Plugin for MapPlugin {
 }
 
 fn setup(
-	mut commands: Commands, 
-	mut tilesets: PxAssets<PxTileset>
+	commands: Commands, 
+	tilesets: PxAssets<PxTileset>
 ) {
-	let map_size = TilemapSize { x: 8, y: 8 };
+    map_spawn(commands, tilesets, MapIdx::Start);
+}
+
+fn map_spawn(
+    mut commands: Commands, 
+    mut tilesets: PxAssets<PxTileset>,
+    map_idx: MapIdx) {
+    
+    let map_size = TilemapSize { x: 8, y: 8 };
     let mut storage = TileStorage::empty(map_size);
 
     for x in 0..map_size.x {
@@ -27,9 +35,20 @@ fn setup(
         for y in 0..map_size.y {    
             let modu_y = y % 2;
             let modu = if modu_x == modu_y { 0 } else { 1 };
-            let sea = x == 0 || x == 7 || y == 0 || y == 7;
-            let border_bott = y == 0 && x != 0 && x != 7;
-            let border_left = x == 0 && y != 0 && y != 7;
+            
+            let sea: bool;
+            let border_bott: bool;
+            let mut border_left = false;
+            
+            if map_idx == MapIdx::Start {
+                sea = x == 0 || y == 0 || y == 7;
+                border_bott = y == 0 && x != 0;
+                border_left = x == 0 && y != 0 && y != 7;
+            } else {
+                sea = y == 0 || y == 7 ||x == 6 || x == 7;
+                border_bott = y == 0 && x != 6 && x != 7;
+            }
+            
             let mut isl = false;
             let idx = if border_left { 
                 4 
@@ -42,7 +61,6 @@ fn setup(
 				1 + modu 
 			};
 			
-            // Each tile must be added to the `TileStorage`
             storage.set(
                 &TilePos { x, y },
                 commands
@@ -72,7 +90,8 @@ fn setup(
             on_finish: PxAnimationFinishBehavior::Loop,
 			frame_transition: PxAnimationFrameTransition::None,
             ..default()
-        }
+        },
+        Map
     ));
 }
 
@@ -146,14 +165,19 @@ fn click(
 }
 
 fn change_map(
-    mut player_q: Query<&mut Player>
+    mut player_q: Query<&mut Player>,
+    mut commands: Commands, 
+    map_q: Query<Entity, &Map>,
+    tilesets: PxAssets<PxTileset>,
 ) {
     let mut player = player_q.single_mut();
-    //info!(player.moving , player.dest.x);
-    let tile_x = player.dest.x as u32 / 8;
-    //info!(tile_x);
-    if !player.moving && tile_x == 6 && !player.go_next_map {
+    if player.next_map {
         warn!("go to next map");
-        player.go_next_map = true;
+        player.next_map = false;
+        // Despawn the map
+        let map = map_q.single();
+		commands.entity(map).despawn();
+        // Spawn the map
+        map_spawn(commands, tilesets, MapIdx::Right);
     }
 }
