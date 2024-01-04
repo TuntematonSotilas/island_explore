@@ -6,7 +6,7 @@ pub struct Player
     pub dest: IVec2,
 	pub time: f32,
     pub moving: bool,
-    pub next_map: bool,
+    pub next_map: Option<MapIdx>,
 }
 
 
@@ -22,7 +22,7 @@ pub struct TileType
     pub clickable: bool,
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone, Copy, Debug)]
 pub enum MapIdx {
     Start,
     Right

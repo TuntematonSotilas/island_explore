@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use seldom_pixel::prelude::*;
 
-use crate::{states::AppState, Layer, components::Player};
+use crate::{states::AppState, Layer, components::{Player, MapIdx}};
 
 pub struct PlayerPlugin;
 
@@ -20,14 +20,14 @@ fn setup(
     commands.spawn((
         PxSpriteBundle::<Layer> {
             sprite: player,
-            position: IVec2::new(32, 32).into(),
+            position: IVec2::new(36, 36).into(),
             ..default()
         },
 		Player { 
-			dest: IVec2::new(32,32), 
+			dest: IVec2::new(36,36), 
 			time: 0., 
 			moving: false,
-			next_map: false,
+			next_map: None,
 		}
     ));
 }
@@ -68,7 +68,18 @@ fn move_player(
 		player.moving = false;
 		let tile_x = player.dest.x as u32 / 8;
 		if tile_x == 7 {
-			player.next_map = true;
+			// Change the map
+			player.next_map = Some(MapIdx::Right);
+			// Teleport the player
+			player.dest.x = 4;
+			**pos = IVec2::new(4, player.dest.y);
+		}
+		if tile_x == 0 {
+			// Change the map
+			player.next_map = Some(MapIdx::Start);
+			// Teleport the player
+			player.dest.x = 7 * 8 + 4;
+			**pos = IVec2::new(player.dest.x, player.dest.y);
 		}
 	}
 }

@@ -171,13 +171,16 @@ fn change_map(
     tilesets: PxAssets<PxTileset>,
 ) {
     let mut player = player_q.single_mut();
-    if player.next_map {
-        warn!("go to next map");
-        player.next_map = false;
+    if player.next_map.is_some() {
+        let map_idx = player.next_map.to_owned().unwrap();
+
+        info!("go to next map : {:?}", map_idx);
+        player.next_map = None;
         // Despawn the map
         let map = map_q.single();
 		commands.entity(map).despawn();
         // Spawn the map
-        map_spawn(commands, tilesets, MapIdx::Right);
+        
+        map_spawn(commands, tilesets, map_idx);
     }
 }
