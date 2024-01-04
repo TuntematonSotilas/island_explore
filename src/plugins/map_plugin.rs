@@ -9,7 +9,7 @@ pub struct MapPlugin;
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(AppState::InGame), setup)
-			.add_systems(Update, (click, despawn_mapclick)
+			.add_systems(Update, (click, despawn_mapclick, change_map)
 				.run_if(in_state(AppState::InGame)));
 
     }
@@ -72,7 +72,7 @@ fn setup(
             on_finish: PxAnimationFinishBehavior::Loop,
 			frame_transition: PxAnimationFrameTransition::None,
             ..default()
-        },
+        }
     ));
 }
 
@@ -143,4 +143,17 @@ fn click(
             }
         }
 	}
+}
+
+fn change_map(
+    mut player_q: Query<&mut Player>
+) {
+    let mut player = player_q.single_mut();
+    //info!(player.moving , player.dest.x);
+    let tile_x = player.dest.x as u32 / 8;
+    //info!(tile_x);
+    if !player.moving && tile_x == 6 && !player.go_next_map {
+        warn!("go to next map");
+        player.go_next_map = true;
+    }
 }

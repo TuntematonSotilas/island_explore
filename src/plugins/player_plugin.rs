@@ -26,7 +26,8 @@ fn setup(
 		Player { 
 			dest: IVec2::new(32,32), 
 			time: 0., 
-			moving: false 
+			moving: false,
+			go_next_map: false,
 		}
     ));
 }
