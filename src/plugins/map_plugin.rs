@@ -19,7 +19,7 @@ fn setup(
 	commands: Commands, 
 	tilesets: PxAssets<PxTileset>
 ) {
-    map_spawn(commands, tilesets, MapIdx::Start);
+    map_spawn(commands, tilesets, MapIdx::LeftTop);
 }
 
 fn map_spawn(
@@ -37,16 +37,20 @@ fn map_spawn(
             let modu = if modu_x == modu_y { 0 } else { 1 };
             
             let sea: bool;
-            let border_bott: bool;
+            let mut border_bott = false;
             let mut border_left = false;
             
-            if map_idx == MapIdx::Start {
-                sea = x == 0 || y == 0 || y == 7;
+            if map_idx == MapIdx::LeftTop {
+                sea = y == 7;
+                border_left = x == 0 && y != 7;
+            } else if map_idx == MapIdx::RightTop {
+                sea = x == 7 || y == 7;
+            } else if map_idx == MapIdx::LeftBottom {
+                sea = x == 0 || y == 0;
                 border_bott = y == 0 && x != 0;
-                border_left = x == 0 && y != 0 && y != 7;
             } else {
-                sea = y == 0 || y == 7 ||x == 6 || x == 7;
-                border_bott = y == 0 && x != 6 && x != 7;
+                sea = x == 7;
+                border_bott = y == 0 && x != 7;
             }
             
             let mut isl = false;
@@ -129,13 +133,15 @@ fn click(
             if let Some(cur_pos) = **cursor_pos {
 
 				//Get center of the clicked tile
-                let x = ((cur_pos.x as f64 / 8.).ceil() as i32) * 8 - 4;
-                let y = ((cur_pos.y as f64 / 8.).ceil() as i32) * 8 - 4;
+                let mut x = ((cur_pos.x as f64 / 8.).ceil() as i32) * 8;
+                x = if x == 0 { 0 } else { x - 4 };
+                let mut y = ((cur_pos.y as f64 / 8.).ceil() as i32) * 8;
+                y = if y == 0 { 0 } else { y - 4 };
                 let dest = IVec2::new(x as i32, y as i32);
                 
                 let tile_x = x as u32 / 8;
                 let tile_y = y as u32 / 8;
-
+                
                 let mut clickable: bool = false;
                 let tile_pos = TilePos { x: tile_x, y: tile_y };
                 if let Some(tile_entity) = tile_storage.get(&tile_pos) {
@@ -176,6 +182,7 @@ fn change_map(
 
         info!("go to next map : {:?}", map_idx);
         player.next_map = None;
+        player.current_map = map_idx;
         // Despawn the map
         let map = map_q.single();
 		commands.entity(map).despawn();

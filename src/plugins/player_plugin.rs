@@ -28,6 +28,7 @@ fn setup(
 			time: 0., 
 			moving: false,
 			next_map: None,
+			current_map: MapIdx::LeftTop,
 		}
     ));
 }
@@ -67,18 +68,50 @@ fn move_player(
     } else if player.moving {
 		player.moving = false;
 		let tile_x = player.dest.x as u32 / 8;
+		let tile_y = player.dest.y as u32 / 8;
 		if tile_x == 7 {
 			// Change the map
-			player.next_map = Some(MapIdx::Right);
+			if player.current_map == MapIdx::LeftTop {
+				player.next_map = Some(MapIdx::RightTop);
+			}
+			if player.current_map == MapIdx::LeftBottom {
+				player.next_map = Some(MapIdx::RightBottom);
+			}
 			// Teleport the player
 			player.dest.x = 4;
 			**pos = IVec2::new(4, player.dest.y);
-		}
-		if tile_x == 0 {
+		} else if tile_x == 0 {
 			// Change the map
-			player.next_map = Some(MapIdx::Start);
+			if player.current_map == MapIdx::RightTop {
+				player.next_map = Some(MapIdx::LeftTop);
+			}
+			if player.current_map == MapIdx::RightBottom {
+				player.next_map = Some(MapIdx::LeftBottom);
+			}
 			// Teleport the player
 			player.dest.x = 7 * 8 + 4;
+			**pos = IVec2::new(player.dest.x, player.dest.y);
+		} else if tile_y == 0 {
+			// Change the map
+			if player.current_map == MapIdx::LeftTop {
+				player.next_map = Some(MapIdx::LeftBottom);
+			}
+			if player.current_map == MapIdx::RightTop {
+				player.next_map = Some(MapIdx::RightBottom);
+			}
+			// Teleport the player
+			player.dest.y = 7 * 8 + 4;
+			**pos = IVec2::new(player.dest.x, player.dest.y);
+		} else if tile_y == 7 {
+			// Change the map
+			if player.current_map == MapIdx::LeftBottom {
+				player.next_map = Some(MapIdx::LeftTop);
+			}
+			if player.current_map == MapIdx::RightBottom {
+				player.next_map = Some(MapIdx::RightTop);
+			}
+			// Teleport the player
+			player.dest.y = 4;
 			**pos = IVec2::new(player.dest.x, player.dest.y);
 		}
 	}

@@ -7,6 +7,7 @@ pub struct Player
 	pub time: f32,
     pub moving: bool,
     pub next_map: Option<MapIdx>,
+    pub current_map: MapIdx,
 }
 
 
@@ -24,6 +25,8 @@ pub struct TileType
 
 #[derive(PartialEq, Clone, Copy, Debug)]
 pub enum MapIdx {
-    Start,
-    Right
+    LeftTop,
+    RightTop,
+    LeftBottom,
+    RightBottom,
 }
