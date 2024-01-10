@@ -110,7 +110,7 @@ fn interact_buttons(
     mut next_state: ResMut<NextState<AppState>>,
     clicks: Query<(), (With<Button>, Added<PxClick>)>,
 ) {
-    for _ in &clicks {
+    for () in &clicks {
         next_state.set(AppState::InGame);
     }
 }
@@ -120,4 +120,3 @@ fn exit(mut commands: Commands, query: Query<Entity, &Menu>) {
         commands.entity(e).despawn();
     }
 }
-

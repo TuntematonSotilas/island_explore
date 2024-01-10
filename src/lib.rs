@@ -3,15 +3,15 @@
 extern crate wasm_bindgen;
 
 use bevy::prelude::*;
-use wasm_bindgen::prelude::*;
 use seldom_pixel::prelude::*;
+use wasm_bindgen::prelude::*;
 
-use plugins::{menu_plugin::MenuPlugin, map_plugin::MapPlugin, player_plugin::PlayerPlugin};
+use plugins::{map_plugin::MapPlugin, menu_plugin::MenuPlugin, player_plugin::PlayerPlugin};
 use states::AppState;
 
+mod components;
 mod plugins;
 mod states;
-mod components;
 
 // ------ ------
 //     Start
@@ -24,7 +24,7 @@ pub fn start() {
     } else {
         h * 0.8 // Desktop
     };
-    
+
     App::new()
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
@@ -35,7 +35,7 @@ pub fn start() {
                 ..default()
             }),
             MenuPlugin,
-			MapPlugin,
+            MapPlugin,
             PlayerPlugin,
         ))
         .add_state::<AppState>()
