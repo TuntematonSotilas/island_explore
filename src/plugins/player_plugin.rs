@@ -2,9 +2,10 @@ use std::cmp::Ordering;
 
 use bevy::prelude::*;
 use seldom_pixel::prelude::*;
+use bevy_ecs_tilemap::prelude::*;
 
 use crate::{
-    components::{MapIdx, Player},
+    components::{MapIdx, Player, TileType},
     states::AppState,
     Layer,
 };
@@ -36,7 +37,12 @@ fn setup(mut commands: Commands, mut sprites: PxAssets<PxSprite>) {
     ));
 }
 
-fn move_player(time: Res<Time>, mut player_q: Query<(&mut Player, &mut PxPosition), With<Player>>) {
+fn move_player(
+    time: Res<Time>, 
+    mut player_q: Query<(&mut Player, &mut PxPosition), With<Player>>,
+    tilemap_q: Query<&TileStorage>,
+    tile_query: Query<&mut TileType>,
+) {
     let (mut player, mut pos) = player_q.single_mut();
 
     if !pos.eq(&player.dest) {
@@ -60,52 +66,35 @@ fn move_player(time: Res<Time>, mut player_q: Query<(&mut Player, &mut PxPositio
         }
     } else if player.moving {
         player.moving = false;
+        // Get the tile border infos
+        let mut border = None;
+        let tile_storage = tilemap_q.single();
         let tile_x = player.dest.x.unsigned_abs() / 8;
         let tile_y = player.dest.y.unsigned_abs() / 8;
-        if tile_x == 7 {
+        let tile_pos = TilePos {
+            x: tile_x,
+            y: tile_y,
+        };
+        if let Some(tile_entity) = tile_storage.get(&tile_pos) {
+            if let Ok(tile_type) = tile_query.get(tile_entity) {
+                border = tile_type.border;
+            }
+        };
+        if let Some(border) = border {
             // Change the map
-            if player.current_map == MapIdx::LeftTop {
-                player.next_map = Some(MapIdx::RightTop);
-            }
-            if player.current_map == MapIdx::LeftBottom {
-                player.next_map = Some(MapIdx::RightBottom);
-            }
+            player.next_map = Some(border.goto_map);
             // Teleport the player
-            player.dest.x = 4;
-            **pos = IVec2::new(4, player.dest.y);
-        } else if tile_x == 0 {
-            // Change the map
-            if player.current_map == MapIdx::RightTop {
-                player.next_map = Some(MapIdx::LeftTop);
+            let mut teleport_x = player.dest.x;
+            let mut teleport_y = player.dest.y;
+            if let Some(tele_x) = border.teleport_x {
+                player.dest.x = tele_x;
+                teleport_x = tele_x;
             }
-            if player.current_map == MapIdx::RightBottom {
-                player.next_map = Some(MapIdx::LeftBottom);
+            if let Some(tele_y) = border.teleport_y {
+                player.dest.y = tele_y;
+                teleport_y = tele_y;
             }
-            // Teleport the player
-            player.dest.x = 7 * 8 + 4;
-            **pos = IVec2::new(player.dest.x, player.dest.y);
-        } else if tile_y == 0 {
-            // Change the map
-            if player.current_map == MapIdx::LeftTop {
-                player.next_map = Some(MapIdx::LeftBottom);
-            }
-            if player.current_map == MapIdx::RightTop {
-                player.next_map = Some(MapIdx::RightBottom);
-            }
-            // Teleport the player
-            player.dest.y = 7 * 8 + 4;
-            **pos = IVec2::new(player.dest.x, player.dest.y);
-        } else if tile_y == 7 {
-            // Change the map
-            if player.current_map == MapIdx::LeftBottom {
-                player.next_map = Some(MapIdx::LeftTop);
-            }
-            if player.current_map == MapIdx::RightBottom {
-                player.next_map = Some(MapIdx::RightTop);
-            }
-            // Teleport the player
-            player.dest.y = 4;
-            **pos = IVec2::new(player.dest.x, player.dest.y);
-        }
+            **pos = IVec2::new(teleport_x, teleport_y);
+        }        
     }
 }
