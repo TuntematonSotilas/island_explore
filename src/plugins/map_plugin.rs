@@ -4,7 +4,7 @@ use seldom_pixel::{cursor::PxCursorPosition, prelude::*};
 
 use crate::{
     components::{Map, Player, TileType, TileBorder},
-    components::{MapClick, MapIdx},
+    components::{MapClick, MapIdx, Direct},
     states::AppState,
     Layer,
 };
@@ -193,15 +193,12 @@ fn change_map(
     let mut player = player_q.single_mut();
     if player.next_map.is_some() {
         let map_idx = player.next_map.unwrap();
-
-        info!("go to next map : {:?}", map_idx);
         player.next_map = None;
         player.current_map = map_idx;
         // Despawn the map
         let map = map_q.single();
         commands.entity(map).despawn();
         // Spawn the map
-
         map_spawn(commands, tilesets, map_idx);
     }
 }
@@ -212,6 +209,7 @@ fn get_border(tile_x: u32, tile_y: u32, map_idx: MapIdx) -> Option<TileBorder>
     let mut goto_map = None;
     let mut teleport_x = None;
     let mut teleport_y = None;
+	let mut direct = Direct::Right;
     if tile_x == 7 {
         if map_idx == MapIdx::LeftTop {
             goto_map = Some(MapIdx::RightTop);
@@ -219,6 +217,7 @@ fn get_border(tile_x: u32, tile_y: u32, map_idx: MapIdx) -> Option<TileBorder>
         if map_idx == MapIdx::LeftBottom {
             goto_map = Some(MapIdx::RightBottom);
         }
+		direct = Direct::Right;
         teleport_x = Some(4);
     } else if tile_x == 0 {
         if map_idx == MapIdx::RightTop {
@@ -227,6 +226,7 @@ fn get_border(tile_x: u32, tile_y: u32, map_idx: MapIdx) -> Option<TileBorder>
         if map_idx == MapIdx::RightBottom {
             goto_map = Some(MapIdx::LeftBottom);
         }
+		direct = Direct::Left;
         teleport_x = Some(7 * 8 + 4);
     } else if tile_y == 0 {
         if map_idx == MapIdx::LeftTop {
@@ -235,6 +235,7 @@ fn get_border(tile_x: u32, tile_y: u32, map_idx: MapIdx) -> Option<TileBorder>
         if map_idx == MapIdx::RightTop {
             goto_map = Some(MapIdx::RightBottom);
         }
+		direct = Direct::Bottom;
         teleport_y = Some(7 * 8 + 4);
     } else if tile_y == 7 {
         if map_idx == MapIdx::LeftBottom {
@@ -243,6 +244,7 @@ fn get_border(tile_x: u32, tile_y: u32, map_idx: MapIdx) -> Option<TileBorder>
         if map_idx == MapIdx::RightBottom {
             goto_map = Some(MapIdx::RightTop);
         }
+		direct = Direct::Top;
         teleport_y = Some(4);
     }
     if let Some(goto_map) = goto_map {
@@ -250,6 +252,7 @@ fn get_border(tile_x: u32, tile_y: u32, map_idx: MapIdx) -> Option<TileBorder>
             goto_map,
             teleport_x,
             teleport_y,
+			direct
         });
     }
     border
