@@ -53,3 +53,12 @@ canvas {
 		opacity: 0;
 	}
 }
+
+.github {
+	position: absolute;
+	top: 95%;
+}
+
+.github img {
+	width: 1rem;
+}
