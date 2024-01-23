@@ -7,6 +7,17 @@ body {
 	justify-content: center;
 }
 
+.ctn {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.github img {
+	margin-top: 1rem;
+	width: 1.5rem;
+}
+
 .hide {
 	display: none;
 }
@@ -18,7 +29,8 @@ body {
 	position: relative;
 }
 
-canvas {
+#game {
+	width: 0;
 	border: 1px solid black;
 	cursor: none;
 }
@@ -54,11 +66,3 @@ canvas {
 	}
 }
 
-.github {
-	position: absolute;
-	top: 95%;
-}
-
-.github img {
-	width: 1rem;
-}

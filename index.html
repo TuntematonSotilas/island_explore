@@ -23,14 +23,17 @@
 </head>
 
 <body>
-	<div id="loader" class="loader"></div>
+	<div class="ctn">
+		<div id="loader" class="loader"></div>
+		<canvas id="game"></canvas>
+		<a class="github" href="https://github.com/TuntematonSotilas/island_explore" target="_blank">
+			<img src="/public/github.png">
+		</a>
+	</div>
 	<script type="module">
-        import init from '/pkg/package.js';
-        init('/pkg/package_bg.wasm');
-    </script>
-	<a class="github" href="https://github.com/TuntematonSotilas/island_explore" target="_blank">
-		<img src="/public/github.png">
-	</a>
+		import init from '/pkg/package.js';
+		init('/pkg/package_bg.wasm');
+	</script>
 </body>
 
 </html>

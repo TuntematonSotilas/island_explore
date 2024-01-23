@@ -30,6 +30,7 @@ pub fn start() {
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
                     resolution: Vec2::splat(size).into(),
+                    canvas: Some("#game".into()),
                     ..default()
                 }),
                 ..default()
