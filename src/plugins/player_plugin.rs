@@ -34,6 +34,8 @@ fn setup(mut commands: Commands, mut sprites: PxAssets<PxSprite>) {
             moving: false,
             next_map: None,
             current_map: MapIdx::LeftTop,
+            direct: Direct::Bottom,
+            prev_direct: Direct::Bottom,
         },
     ));
 }
@@ -86,10 +88,17 @@ fn move_player(
         };
         if let Some(border) = border {
 			
-			let is_good_direct = (border.direct == Direct::Right && player.dest.x > player.prev.x) 
-				|| (border.direct == Direct::Left && player.dest.x < player.prev.x) 
-				|| (border.direct == Direct::Top && player.dest.y > player.prev.y) 
-				|| (border.direct == Direct::Bottom && player.dest.y < player.prev.y); 
+            if player.dest.x > player.prev.x {
+                player.direct = Direct::Right;
+            } else if player.dest.x < player.prev.x {
+                player.direct = Direct::Left;
+            } else if player.dest.y < player.prev.y {
+                player.direct = Direct::Bottom;
+            } else {
+                player.direct = Direct::Top;
+            }
+
+			let is_good_direct = border.direct == player.direct; 
 			
 			if is_good_direct {
 				// Change the map
