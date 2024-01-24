@@ -8,8 +8,8 @@ pub struct Player {
     pub moving: bool,
     pub next_map: Option<MapIdx>,
     pub current_map: MapIdx,
-    pub direct: Direct,
     pub prev_direct: Direct,
+    pub new_direct: Direct,
 }
 
 #[derive(Component)]

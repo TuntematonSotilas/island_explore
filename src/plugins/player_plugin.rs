@@ -15,7 +15,7 @@ pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(AppState::InGame), setup)
-            .add_systems(Update, (move_player).run_if(in_state(AppState::InGame)));
+            .add_systems(Update, (move_player, change_direction).run_if(in_state(AppState::InGame)));
     }
 }
 
@@ -34,8 +34,8 @@ fn setup(mut commands: Commands, mut sprites: PxAssets<PxSprite>) {
             moving: false,
             next_map: None,
             current_map: MapIdx::LeftTop,
-            direct: Direct::Bottom,
             prev_direct: Direct::Bottom,
+            new_direct: Direct::Bottom,
         },
     ));
 }
@@ -88,16 +88,16 @@ fn move_player(
         };
         if let Some(border) = border {
             if player.dest.x > player.prev.x {
-                player.direct = Direct::Right;
+                player.new_direct = Direct::Right;
             } else if player.dest.x < player.prev.x {
-                player.direct = Direct::Left;
+                player.new_direct = Direct::Left;
             } else if player.dest.y < player.prev.y {
-                player.direct = Direct::Bottom;
+                player.new_direct = Direct::Bottom;
             } else {
-                player.direct = Direct::Top;
+                player.new_direct = Direct::Top;
             }
-
-            let is_good_direct = border.direct == player.direct;
+            
+            let is_good_direct = border.direct == player.new_direct;
 
             if is_good_direct {
                 // Change the map
@@ -116,5 +116,18 @@ fn move_player(
                 **pos = IVec2::new(teleport_x, teleport_y);
             }
         }
+    }
+}
+
+fn change_direction(mut player_q: Query<(&mut Player, &mut Handle<PxSprite>), With<Player>>) {
+    //info!("change_direction");
+    
+    let (mut player, mut sprite) = player_q.single_mut();
+
+    //info!("{:?} {:?}", player.prev_direct, player.new_direct);
+
+    if player.new_direct != player.prev_direct {
+        info!("change direction");
+        player.prev_direct = player.new_direct;
     }
 }
