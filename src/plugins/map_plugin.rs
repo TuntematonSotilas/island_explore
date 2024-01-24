@@ -3,8 +3,8 @@ use bevy_ecs_tilemap::prelude::*;
 use seldom_pixel::{cursor::PxCursorPosition, prelude::*};
 
 use crate::{
-    components::{Map, Player, TileType, TileBorder},
-    components::{MapClick, MapIdx, Direct},
+    components::{Direct, MapClick, MapIdx},
+    components::{Map, Player, TileBorder, TileType},
     states::AppState,
     Layer,
 };
@@ -64,10 +64,7 @@ fn map_spawn(mut commands: Commands, mut tilesets: PxAssets<PxTileset>, map_idx:
                 1 + modu
             };
 
-            let mut border: Option<TileBorder> = None;
-            if isl {
-                 border = get_border(x, y, map_idx);
-            }
+            let border: Option<TileBorder> = if isl { get_border(x, y, map_idx) } else { None };
 
             storage.set(
                 &TilePos { x, y },
@@ -77,9 +74,9 @@ fn map_spawn(mut commands: Commands, mut tilesets: PxAssets<PxTileset>, map_idx:
                             texture: TileTextureIndex(idx),
                             ..default()
                         },
-                        TileType { 
+                        TileType {
                             clickable: isl,
-                            border: border
+                            border,
                         },
                     ))
                     .id(),
@@ -203,13 +200,12 @@ fn change_map(
     }
 }
 
-fn get_border(tile_x: u32, tile_y: u32, map_idx: MapIdx) -> Option<TileBorder>
-{
+fn get_border(tile_x: u32, tile_y: u32, map_idx: MapIdx) -> Option<TileBorder> {
     let mut border: Option<TileBorder> = None;
     let mut goto_map = None;
     let mut teleport_x = None;
     let mut teleport_y = None;
-	let mut direct = Direct::Right;
+    let mut direct = Direct::Right;
     if tile_x == 7 {
         if map_idx == MapIdx::LeftTop {
             goto_map = Some(MapIdx::RightTop);
@@ -217,7 +213,7 @@ fn get_border(tile_x: u32, tile_y: u32, map_idx: MapIdx) -> Option<TileBorder>
         if map_idx == MapIdx::LeftBottom {
             goto_map = Some(MapIdx::RightBottom);
         }
-		direct = Direct::Right;
+        direct = Direct::Right;
         teleport_x = Some(4);
     } else if tile_x == 0 {
         if map_idx == MapIdx::RightTop {
@@ -226,7 +222,7 @@ fn get_border(tile_x: u32, tile_y: u32, map_idx: MapIdx) -> Option<TileBorder>
         if map_idx == MapIdx::RightBottom {
             goto_map = Some(MapIdx::LeftBottom);
         }
-		direct = Direct::Left;
+        direct = Direct::Left;
         teleport_x = Some(7 * 8 + 4);
     } else if tile_y == 0 {
         if map_idx == MapIdx::LeftTop {
@@ -235,7 +231,7 @@ fn get_border(tile_x: u32, tile_y: u32, map_idx: MapIdx) -> Option<TileBorder>
         if map_idx == MapIdx::RightTop {
             goto_map = Some(MapIdx::RightBottom);
         }
-		direct = Direct::Bottom;
+        direct = Direct::Bottom;
         teleport_y = Some(7 * 8 + 4);
     } else if tile_y == 7 {
         if map_idx == MapIdx::LeftBottom {
@@ -244,15 +240,15 @@ fn get_border(tile_x: u32, tile_y: u32, map_idx: MapIdx) -> Option<TileBorder>
         if map_idx == MapIdx::RightBottom {
             goto_map = Some(MapIdx::RightTop);
         }
-		direct = Direct::Top;
+        direct = Direct::Top;
         teleport_y = Some(4);
     }
     if let Some(goto_map) = goto_map {
         border = Some(TileBorder {
             goto_map,
+            direct,
             teleport_x,
             teleport_y,
-			direct
         });
     }
     border

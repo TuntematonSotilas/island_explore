@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 #[derive(Component)]
 pub struct Player {
-	pub prev: IVec2,
+    pub prev: IVec2,
     pub dest: IVec2,
     pub time: f32,
     pub moving: bool,
@@ -30,7 +30,7 @@ pub struct TileType {
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub struct TileBorder {
     pub goto_map: MapIdx,
-	pub direct: Direct,
+    pub direct: Direct,
     pub teleport_x: Option<i32>,
     pub teleport_y: Option<i32>,
 }
@@ -38,7 +38,7 @@ pub struct TileBorder {
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Direct {
     Right,
-	Left,
+    Left,
     Top,
     Bottom,
 }

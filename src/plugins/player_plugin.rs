@@ -1,11 +1,11 @@
 use std::cmp::Ordering;
 
 use bevy::prelude::*;
-use seldom_pixel::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
+use seldom_pixel::prelude::*;
 
 use crate::{
-    components::{MapIdx, Player, TileType, Direct},
+    components::{Direct, MapIdx, Player, TileType},
     states::AppState,
     Layer,
 };
@@ -28,7 +28,7 @@ fn setup(mut commands: Commands, mut sprites: PxAssets<PxSprite>) {
             ..default()
         },
         Player {
-			prev: IVec2::new(36, 36),
+            prev: IVec2::new(36, 36),
             dest: IVec2::new(36, 36),
             time: 0.,
             moving: false,
@@ -41,7 +41,7 @@ fn setup(mut commands: Commands, mut sprites: PxAssets<PxSprite>) {
 }
 
 fn move_player(
-    time: Res<Time>, 
+    time: Res<Time>,
     mut player_q: Query<(&mut Player, &mut PxPosition), With<Player>>,
     tilemap_q: Query<&TileStorage>,
     tile_query: Query<&mut TileType>,
@@ -53,7 +53,7 @@ fn move_player(
         player.time += time;
 
         if player.time > 0.1 {
-			player.prev = **pos;
+            player.prev = **pos;
 
             let x = match player.dest.x.cmp(&pos.x) {
                 Ordering::Greater => pos.x + 1,
@@ -75,7 +75,7 @@ fn move_player(
         let mut border = None;
         let tile_storage = tilemap_q.single();
 
-		let tile_x = player.dest.x.unsigned_abs() / 8;
+        let tile_x = player.dest.x.unsigned_abs() / 8;
         let tile_y = player.dest.y.unsigned_abs() / 8;
         let tile_pos = TilePos {
             x: tile_x,
@@ -87,7 +87,6 @@ fn move_player(
             }
         };
         if let Some(border) = border {
-			
             if player.dest.x > player.prev.x {
                 player.direct = Direct::Right;
             } else if player.dest.x < player.prev.x {
@@ -98,25 +97,24 @@ fn move_player(
                 player.direct = Direct::Top;
             }
 
-			let is_good_direct = border.direct == player.direct; 
-			
-			if is_good_direct {
-				// Change the map
-				player.next_map = Some(border.goto_map);
-				// Teleport the player
-				let mut teleport_x = player.dest.x;
-				let mut teleport_y = player.dest.y;
-				if let Some(tele_x) = border.teleport_x {
-					player.dest.x = tele_x;
-					teleport_x = tele_x;
-				}
-				if let Some(tele_y) = border.teleport_y {
-					player.dest.y = tele_y;
-					teleport_y = tele_y;
-				}
-				**pos = IVec2::new(teleport_x, teleport_y);
-			}
-           
-        }        
+            let is_good_direct = border.direct == player.direct;
+
+            if is_good_direct {
+                // Change the map
+                player.next_map = Some(border.goto_map);
+                // Teleport the player
+                let mut teleport_x = player.dest.x;
+                let mut teleport_y = player.dest.y;
+                if let Some(tele_x) = border.teleport_x {
+                    player.dest.x = tele_x;
+                    teleport_x = tele_x;
+                }
+                if let Some(tele_y) = border.teleport_y {
+                    player.dest.y = tele_y;
+                    teleport_y = tele_y;
+                }
+                **pos = IVec2::new(teleport_x, teleport_y);
+            }
+        }
     }
 }
