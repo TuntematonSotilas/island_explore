@@ -71,6 +71,17 @@ fn move_player(
         }
     } else if player.moving {
         player.moving = false;
+
+		if player.dest.x > player.prev.x {
+			player.new_direct = Direct::Right;
+		} else if player.dest.x < player.prev.x {
+			player.new_direct = Direct::Left;
+		} else if player.dest.y < player.prev.y {
+			player.new_direct = Direct::Bottom;
+		} else {
+			player.new_direct = Direct::Top;
+		}
+
         // Get the tile border infos
         let mut border = None;
         let tile_storage = tilemap_q.single();
@@ -87,15 +98,6 @@ fn move_player(
             }
         };
         if let Some(border) = border {
-            if player.dest.x > player.prev.x {
-                player.new_direct = Direct::Right;
-            } else if player.dest.x < player.prev.x {
-                player.new_direct = Direct::Left;
-            } else if player.dest.y < player.prev.y {
-                player.new_direct = Direct::Bottom;
-            } else {
-                player.new_direct = Direct::Top;
-            }
             
             let is_good_direct = border.direct == player.new_direct;
 
@@ -120,12 +122,11 @@ fn move_player(
 }
 
 fn change_direction(mut player_q: Query<(&mut Player, &mut Handle<PxSprite>), With<Player>>) {
-    //info!("change_direction");
     
     let (mut player, mut sprite) = player_q.single_mut();
 
-    //info!("{:?} {:?}", player.prev_direct, player.new_direct);
-
+    //info!("{:?}", player.new_direct);
+	
     if player.new_direct != player.prev_direct {
         info!("change direction");
         player.prev_direct = player.new_direct;
