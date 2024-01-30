@@ -121,14 +121,41 @@ fn move_player(
     }
 }
 
-fn change_direction(mut player_q: Query<(&mut Player, &mut Handle<PxSprite>), With<Player>>) {
+fn change_direction(
+    player_q: Query<(Entity, &Player)>,
+    mut commands: Commands,
+    mut sprites: PxAssets<PxSprite>) {
     
-    let (mut player, mut sprite) = player_q.single_mut();
-
-    //info!("{:?}", player.new_direct);
-	
+    let (entity, player) = player_q.single();
     if player.new_direct != player.prev_direct {
+        
         info!("change direction");
-        player.prev_direct = player.new_direct;
+        let suffix = match player.new_direct {
+            Direct::Right => "r",
+            Direct::Left => "l",
+            Direct::Top => "t",
+            Direct::Bottom => "b",
+        };
+        let path = format!("/public/sprite/player_{suffix}.png");
+        let sprite = sprites.load(path);
+        commands.entity(entity).despawn();
+        commands.spawn((
+            PxSpriteBundle::<Layer> {
+                sprite: sprite,
+                position: IVec2::new(player.dest.x, player.dest.y).into(),
+                ..default()
+            },
+            Player {
+                prev: IVec2::new(player.dest.x, player.dest.y),
+                dest: IVec2::new(player.dest.x, player.dest.y),
+                time: 0.,
+                moving: false,
+                next_map: None,
+                current_map: player.current_map,
+                prev_direct: player.new_direct,
+                new_direct: player.new_direct,
+            },
+        ));
+        
     }
 }
