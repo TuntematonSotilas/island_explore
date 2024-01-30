@@ -66,21 +66,23 @@ fn move_player(
                 Ordering::Equal => pos.y,
             };
 
+			if player.dest.x > player.prev.x {
+				player.new_direct = Direct::Right;
+			} else if player.dest.x < player.prev.x {
+				player.new_direct = Direct::Left;
+			} else if player.dest.y < player.prev.y {
+				player.new_direct = Direct::Bottom;
+			} else {
+				player.new_direct = Direct::Top;
+			}
+			
             **pos = IVec2::new(x, y);
             player.time = 0.;
         }
     } else if player.moving {
         player.moving = false;
 
-		if player.dest.x > player.prev.x {
-			player.new_direct = Direct::Right;
-		} else if player.dest.x < player.prev.x {
-			player.new_direct = Direct::Left;
-		} else if player.dest.y < player.prev.y {
-			player.new_direct = Direct::Bottom;
-		} else {
-			player.new_direct = Direct::Top;
-		}
+		
 
         // Get the tile border infos
         let mut border = None;
@@ -122,11 +124,11 @@ fn move_player(
 }
 
 fn change_direction(
-    player_q: Query<(Entity, &Player)>,
+    player_q: Query<(Entity, &PxPosition, &Player)>,
     mut commands: Commands,
     mut sprites: PxAssets<PxSprite>) {
     
-    let (entity, player) = player_q.single();
+    let (entity, pos, player) = player_q.single();
     if player.new_direct != player.prev_direct {
         
         info!("change direction");
@@ -142,15 +144,15 @@ fn change_direction(
         commands.spawn((
             PxSpriteBundle::<Layer> {
                 sprite: sprite,
-                position: IVec2::new(player.dest.x, player.dest.y).into(),
+                position: IVec2::new(pos.x, pos.y).into(),
                 ..default()
             },
             Player {
-                prev: IVec2::new(player.dest.x, player.dest.y),
-                dest: IVec2::new(player.dest.x, player.dest.y),
-                time: 0.,
-                moving: false,
-                next_map: None,
+                prev: player.prev,
+                dest: player.dest,
+                time: player.time,
+                moving: player.moving,
+                next_map: player.next_map,
                 current_map: player.current_map,
                 prev_direct: player.new_direct,
                 new_direct: player.new_direct,
