@@ -20,7 +20,7 @@ impl Plugin for PlayerPlugin {
 }
 
 fn setup(mut commands: Commands, mut sprites: PxAssets<PxSprite>) {
-    let player = sprites.load("/public/sprite/player.png");
+    let player = sprites.load("/public/sprite/player_b.png");
     commands.spawn((
         PxSpriteBundle::<Layer> {
             sprite: player,
@@ -132,19 +132,23 @@ fn change_direction(
     if player.new_direct != player.prev_direct {
         
         info!("change direction");
-        let suffix = match player.new_direct {
+        let suffix = "t"; /*match player.new_direct {
             Direct::Right => "r",
             Direct::Left => "l",
             Direct::Top => "t",
             Direct::Bottom => "b",
-        };
+        };*/
         let path = format!("/public/sprite/player_{suffix}.png");
-        let sprite = sprites.load(path);
+        let sprite = sprites.load_animated(path, 3);
         commands.entity(entity).despawn();
         commands.spawn((
             PxSpriteBundle::<Layer> {
                 sprite: sprite,
                 position: IVec2::new(pos.x, pos.y).into(),
+                ..default()
+            },
+            PxAnimationBundle {
+                on_finish: PxAnimationFinishBehavior::Mark,
                 ..default()
             },
             Player {
