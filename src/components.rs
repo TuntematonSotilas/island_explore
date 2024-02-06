@@ -41,7 +41,7 @@ pub enum Direct {
     Left,
     Top,
     Bottom,
-	Stop,
+    Stop,
 }
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
