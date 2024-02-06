@@ -34,8 +34,8 @@ fn setup(mut commands: Commands, mut sprites: PxAssets<PxSprite>) {
             moving: false,
             next_map: None,
             current_map: MapIdx::LeftTop,
-            prev_direct: Direct::Bottom,
-            new_direct: Direct::Bottom,
+            prev_direct: Direct::Stop,
+            new_direct: Direct::Stop,
         },
     ));
 }
@@ -81,9 +81,7 @@ fn move_player(
         }
     } else if player.moving {
         player.moving = false;
-
 		
-
         // Get the tile border infos
         let mut border = None;
         let tile_storage = tilemap_q.single();
@@ -120,6 +118,8 @@ fn move_player(
                 **pos = IVec2::new(teleport_x, teleport_y);
             }
         }
+		player.new_direct = Direct::Stop;
+
     }
 }
 
@@ -131,37 +131,53 @@ fn change_direction(
     let (entity, pos, player) = player_q.single();
     if player.new_direct != player.prev_direct {
         
-        info!("change direction");
+		commands.entity(entity).despawn();
+
         let suffix = match player.new_direct {
-            Direct::Right => "r",
-            Direct::Left => "l",
-            Direct::Top => "t",
-            Direct::Bottom => "b",
+            Direct::Right => "_r",
+            Direct::Left => "_l",
+            Direct::Top => "_t",
+            Direct::Bottom => "_b",
+			Direct::Stop => "",
         };
-        let path = format!("/public/sprite/player_{suffix}.png");
-        let sprite = sprites.load_animated(path, 3);
-        commands.entity(entity).despawn();
-        commands.spawn((
-            PxSpriteBundle::<Layer> {
-                sprite: sprite,
-                position: IVec2::new(pos.x, pos.y).into(),
-                ..default()
-            },
-            PxAnimationBundle {
-                on_finish: PxAnimationFinishBehavior::Mark,
-                ..default()
-            },
-            Player {
-                prev: player.prev,
-                dest: player.dest,
-                time: player.time,
-                moving: player.moving,
-                next_map: player.next_map,
-                current_map: player.current_map,
-                prev_direct: player.new_direct,
-                new_direct: player.new_direct,
-            },
-        ));
-        
+
+		let path = format!("/public/sprite/player{suffix}.png");
+        let sprite = if player.new_direct == Direct::Stop {
+			sprites.load(path)
+		} else {
+			sprites.load_animated(path, 3)
+		};
+		        
+		let player = Player {
+			prev: player.prev,
+			dest: player.dest,
+			time: player.time,
+			moving: player.moving,
+			next_map: player.next_map,
+			current_map: player.current_map,
+			prev_direct: player.new_direct,
+			new_direct: player.new_direct,
+		};
+		let sprite_bnd = PxSpriteBundle::<Layer> {
+			sprite: sprite,
+			position: IVec2::new(pos.x, pos.y).into(),
+			..default()
+		};
+
+		if player.new_direct == Direct::Stop {
+			commands.spawn((
+				sprite_bnd,
+				player
+			));
+		} else {
+			commands.spawn((
+				sprite_bnd,
+				PxAnimationBundle {
+					on_finish: PxAnimationFinishBehavior::Loop,
+					..default()
+				},
+				player
+			));
+		}
     }
 }
