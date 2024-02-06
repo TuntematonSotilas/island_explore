@@ -22,6 +22,9 @@ pub struct MapClick;
 pub struct Tile;
 
 #[derive(Component)]
+pub struct Tree;
+
+#[derive(Component)]
 pub struct TileType {
     pub clickable: bool,
     pub border: Option<TileBorder>,

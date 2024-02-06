@@ -3,8 +3,7 @@ use bevy_ecs_tilemap::prelude::*;
 use seldom_pixel::{cursor::PxCursorPosition, prelude::*};
 
 use crate::{
-    components::{Direct, MapClick, MapIdx},
-    components::{Map, Player, TileBorder, TileType},
+    components::{Direct, Map, MapClick, MapIdx, Player, TileBorder, TileType, Tree},
     states::AppState,
     Layer,
 };
@@ -13,7 +12,7 @@ pub struct MapPlugin;
 
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(AppState::InGame), setup)
+        app.add_systems(OnEnter(AppState::InGame), (setup, tree_spawn) )
             .add_systems(
                 Update,
                 (click, despawn_mapclick, change_map).run_if(in_state(AppState::InGame)),
@@ -25,7 +24,9 @@ fn setup(commands: Commands, tilesets: PxAssets<PxTileset>) {
     map_spawn(commands, tilesets, MapIdx::LeftTop);
 }
 
-fn map_spawn(mut commands: Commands, mut tilesets: PxAssets<PxTileset>, map_idx: MapIdx) {
+fn map_spawn(mut commands: Commands, 
+	mut tilesets: PxAssets<PxTileset>, 
+	map_idx: MapIdx) {
     let map_size = TilemapSize { x: 8, y: 8 };
     let mut storage = TileStorage::empty(map_size);
 
@@ -252,4 +253,16 @@ fn get_border(tile_x: u32, tile_y: u32, map_idx: MapIdx) -> Option<TileBorder> {
         });
     }
     border
+}
+
+fn tree_spawn(mut commands: Commands, mut sprites: PxAssets<PxSprite>) {
+	let tree = sprites.load("/public/sprite/tree.png");
+    commands.spawn((
+        PxSpriteBundle::<Layer> {
+            sprite: tree,
+            position: IVec2::new(44, 44).into(),
+            ..default()
+        },
+        Tree,
+    ));
 }
