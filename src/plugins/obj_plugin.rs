@@ -29,13 +29,20 @@ fn tree_spawn(mut commands: Commands, mut sprites: PxAssets<PxSprite>) {
 
 fn set_to_top(
     mut tree_q: Query<(&mut Tree, &mut PxPosition), (With<Tree>, Without<Player>)>,
-    player_q: Query<&PxPosition, With<Player>>,
+    player_q: Query<(&Player, &PxPosition), With<Player>>,
 ) {
     let (mut tree, mut pos_tree) = tree_q.single_mut();
-    let pos_player = player_q.single();
-    if pos_player.x == pos_tree.x && !tree.on_top {
+    let (player, pos_player) = player_q.single();
+    let collide = pos_player.x > pos_tree.x - 4 &&
+            pos_player.x < pos_tree.x + 4 &&
+            pos_player.y > pos_tree.y - 4 && 
+            pos_player.y < pos_tree.y + 4;
+
+    if collide && !tree.on_top {
         info!("set to top");
         pos_tree.x = pos_tree.x;
-        tree.on_top = true;
+        if !player.moving {
+            tree.on_top = true;
+        }
     }
 }

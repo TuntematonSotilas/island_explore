@@ -80,6 +80,7 @@ fn move_player(
 
             **pos = IVec2::new(x, y);
             player.time = 0.;
+             
         }
     } else if player.moving {
         player.moving = false;
@@ -168,10 +169,10 @@ fn change_direction(
         } else {
             commands.spawn((
                 sprite_bnd,
-                PxAnimationBundle {
+                /*PxAnimationBundle {
                     on_finish: PxAnimationFinishBehavior::Loop,
                     ..default()
-                },
+                },*/
                 player,
             ));
         }
