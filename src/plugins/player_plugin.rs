@@ -5,7 +5,7 @@ use bevy_ecs_tilemap::prelude::*;
 use seldom_pixel::prelude::*;
 
 use crate::{
-    components::{Direct, Layer, MapIdx, Player, TileType, Tree},
+    components::{Direct, Layer, MapIdx, Player, TileType},
     states::AppState,
 };
 
@@ -127,7 +127,6 @@ fn change_direction(
     player_q: Query<(Entity, &PxPosition, &Player)>,
     mut commands: Commands,
     mut sprites: PxAssets<PxSprite>,
-    mut tree_q: Query<&mut Tree>,
 ) {
     let (entity, pos, player) = player_q.single();
     if player.new_direct != player.prev_direct {
