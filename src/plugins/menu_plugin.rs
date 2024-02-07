@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use seldom_pixel::prelude::*;
 
-use crate::{states::AppState, Layer};
+use crate::{components::Layer, states::AppState};
 
 pub struct MenuPlugin;
 

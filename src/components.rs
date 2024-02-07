@@ -1,4 +1,8 @@
 use bevy::prelude::*;
+use seldom_pixel::prelude::*;
+
+#[px_layer]
+pub struct Layer;
 
 #[derive(Component)]
 pub struct Player {
@@ -22,7 +26,10 @@ pub struct MapClick;
 pub struct Tile;
 
 #[derive(Component)]
-pub struct Tree;
+pub struct Tree 
+{
+    pub on_top: bool,
+}
 
 #[derive(Component)]
 pub struct TileType {

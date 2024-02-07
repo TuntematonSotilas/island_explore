@@ -3,10 +3,9 @@
 extern crate wasm_bindgen;
 
 use bevy::prelude::*;
-use seldom_pixel::prelude::*;
 use wasm_bindgen::prelude::*;
 
-use plugins::{map_plugin::MapPlugin, menu_plugin::MenuPlugin, player_plugin::PlayerPlugin};
+use plugins::{map_plugin::MapPlugin, menu_plugin::MenuPlugin, obj_plugin::ObjPlugin, player_plugin::PlayerPlugin};
 use states::AppState;
 
 mod components;
@@ -38,6 +37,7 @@ pub fn start() {
             MenuPlugin,
             MapPlugin,
             PlayerPlugin,
+            ObjPlugin,
         ))
         .add_state::<AppState>()
         .insert_resource(ClearColor(Color::hex("#1f93ac").unwrap_or_default()))
@@ -63,5 +63,3 @@ fn get_window_size() -> (f32, f32) {
     (w, h)
 }
 
-#[px_layer]
-struct Layer;
