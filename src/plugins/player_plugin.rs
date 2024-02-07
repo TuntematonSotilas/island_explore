@@ -38,6 +38,7 @@ fn setup(mut commands: Commands, mut sprites: PxAssets<PxSprite>) {
             current_map: MapIdx::LeftTop,
             prev_direct: Direct::Stop,
             new_direct: Direct::Stop,
+			animated: false,
         },
     ));
 }
@@ -148,7 +149,7 @@ fn change_direction(
             sprites.load_animated(path, 3)
         };
 
-        let player = Player {
+        let mut player = Player {
             prev: player.prev,
             dest: player.dest,
             time: player.time,
@@ -157,6 +158,7 @@ fn change_direction(
             current_map: player.current_map,
             prev_direct: player.new_direct,
             new_direct: player.new_direct,
+			animated: false,
         };
         let sprite_bnd = PxSpriteBundle::<Layer> {
             sprite,
@@ -165,14 +167,15 @@ fn change_direction(
         };
 
         if player.new_direct == Direct::Stop {
-            commands.spawn((sprite_bnd, player));
+			commands.spawn((sprite_bnd, player));
         } else {
+			player.animated = true;
             commands.spawn((
                 sprite_bnd,
-                /*PxAnimationBundle {
+                PxAnimationBundle {
                     on_finish: PxAnimationFinishBehavior::Loop,
                     ..default()
-                },*/
+                },
                 player,
             ));
         }

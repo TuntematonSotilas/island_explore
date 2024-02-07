@@ -23,26 +23,40 @@ fn tree_spawn(mut commands: Commands, mut sprites: PxAssets<PxSprite>) {
             position: IVec2::new(44, 44).into(),
             ..default()
         },
-        Tree { on_top: false },
+        Tree,
     ));
 }
 
 fn set_to_top(
-    mut tree_q: Query<(&mut Tree, &mut PxPosition), (With<Tree>, Without<Player>)>,
-    player_q: Query<(&Player, &PxPosition), With<Player>>,
+    mut tree_q: Query<&PxPosition, (With<Tree>, Without<Player>)>,
+    mut player_q: Query<(Entity, &mut Player, &PxPosition), With<Player>>,
+	mut commands: Commands,
 ) {
-    let (mut tree, mut pos_tree) = tree_q.single_mut();
-    let (player, pos_player) = player_q.single();
-    let collide = pos_player.x > pos_tree.x - 4 &&
-            pos_player.x < pos_tree.x + 4 &&
-            pos_player.y > pos_tree.y - 4 && 
-            pos_player.y < pos_tree.y + 4;
+   
+	let (entity_p, mut player, pos_player) = player_q.single_mut();
+	let pos_tree = tree_q.single_mut();
 
-    if collide && !tree.on_top {
-        info!("set to top");
-        pos_tree.x = pos_tree.x;
-        if !player.moving {
-            tree.on_top = true;
-        }
-    }
+	let collide = pos_player.x > pos_tree.x - 4 &&
+		pos_player.x < pos_tree.x + 4 &&
+		pos_player.y > pos_tree.y - 4 && 
+		pos_player.y < pos_tree.y + 4;
+
+	if collide {
+		info!("set tree to top");
+		player.animated = false;
+		commands.entity(entity_p).remove::<PxAnimationBundle>();
+
+	}
+
+	if !collide && !player.animated {
+		info!("reset anim");
+		player.animated = true;
+		commands.entity(entity_p).insert(
+			PxAnimationBundle {
+				on_finish: PxAnimationFinishBehavior::Loop,
+				..default()
+			},
+		);
+	}
+	
 }

@@ -14,6 +14,7 @@ pub struct Player {
     pub current_map: MapIdx,
     pub prev_direct: Direct,
     pub new_direct: Direct,
+	pub animated: bool,
 }
 
 #[derive(Component)]
@@ -26,10 +27,7 @@ pub struct MapClick;
 pub struct Tile;
 
 #[derive(Component)]
-pub struct Tree 
-{
-    pub on_top: bool,
-}
+pub struct Tree;
 
 #[derive(Component)]
 pub struct TileType {
