@@ -14,18 +14,21 @@ impl Plugin for MapPlugin {
         app.add_systems(OnEnter(AppState::InGame), setup)
             .add_systems(
                 Update,
-                (click, despawn_mapclick, change_map).run_if(in_state(AppState::InGame)),
+                (click, hide_mapclick, change_map).run_if(in_state(AppState::InGame)),
             );
     }
 }
 
-fn setup(commands: Commands, tilesets: PxAssets<PxTileset>) {
-    map_spawn(commands, tilesets, MapIdx::LeftTop);
+fn setup(commands: Commands, tilesets: PxAssets<PxTileset>, sprites: PxAssets<PxSprite>) {
+    map_spawn(commands, tilesets, MapIdx::LeftTop, sprites, false);
 }
 
 fn map_spawn(mut commands: Commands, 
 	mut tilesets: PxAssets<PxTileset>, 
-	map_idx: MapIdx) {
+	map_idx: MapIdx,
+    mut sprites: PxAssets<PxSprite>,
+	is_change: bool) {
+
     let map_size = TilemapSize { x: 8, y: 8 };
     let mut storage = TileStorage::empty(map_size);
 
@@ -65,7 +68,7 @@ fn map_spawn(mut commands: Commands,
             };
 
             let border: Option<TileBorder> = if isl { get_border(x, y, map_idx) } else { None };
-
+			
             storage.set(
                 &TilePos { x, y },
                 commands
@@ -81,7 +84,7 @@ fn map_spawn(mut commands: Commands,
                     ))
                     .id(),
             );
-        }
+        }	
     }
 
     // Spawn the map
@@ -101,30 +104,43 @@ fn map_spawn(mut commands: Commands,
         },
         Map,
     ));
+
+	// Spawn the Map Click Sprite
+	if !is_change {
+		let mapclick = sprites.load("/public/sprite/mapclick.png");
+		commands.spawn((
+			PxSpriteBundle::<Layer> {
+				sprite: mapclick,
+				position: IVec2::new(0, 0).into(),
+				visibility: Visibility::Hidden,
+				..default()
+			},
+			MapClick,
+		));
+	}
+	
 }
 
-fn despawn_mapclick(
-    mut commands: Commands,
+fn hide_mapclick(
     player_q: Query<&Player>,
-    mapclick_q: Query<Entity, &MapClick>,
+    mut mapclick_q: Query<&mut Visibility, With<MapClick>>,
 ) {
     let player = player_q.single();
-    // Remove Map Click Sprite
-    if !player.moving && !mapclick_q.is_empty() {
-        let mapclick = mapclick_q.single();
-        commands.entity(mapclick).despawn();
+    if !player.moving {
+        // Hide Map Click Sprite
+    	let mut visibility = mapclick_q.single_mut();
+        *visibility = Visibility::Hidden;
     }
 }
 
 #[allow(clippy::cast_possible_truncation)]
 fn click(
-    mut commands: Commands,
     cursor_pos: Res<PxCursorPosition>,
     buttons: Res<Input<MouseButton>>,
     mut player_q: Query<&mut Player>,
-    mut sprites: PxAssets<PxSprite>,
     tilemap_q: Query<&TileStorage>,
     tile_query: Query<&mut TileType>,
+	mut mapclick_q: Query<(&mut Visibility, &mut PxPosition), With<MapClick>>,
 ) {
     if buttons.just_released(MouseButton::Left) {
         let tile_storage = tilemap_q.single();
@@ -162,17 +178,10 @@ fn click(
                 };
 
                 if clickable {
-                    // Spawn Map Click Sprite
-                    let mapclick = sprites.load("/public/sprite/mapclick.png");
-                    commands.spawn((
-                        PxSpriteBundle::<Layer> {
-                            sprite: mapclick,
-                            position: dest.into(),
-                            ..default()
-                        },
-                        MapClick,
-                    ));
-
+					// Show Map Click Sprite
+                    let (mut visibility, mut pos) = mapclick_q.single_mut();
+        			*visibility = Visibility::Visible;
+					**pos = dest;
                     player.moving = true;
                     player.dest = dest;
                 }
@@ -186,6 +195,7 @@ fn change_map(
     mut commands: Commands,
     map_q: Query<Entity, &Map>,
     tilesets: PxAssets<PxTileset>,
+	sprites: PxAssets<PxSprite>,
 ) {
     let mut player = player_q.single_mut();
     if player.next_map.is_some() {
@@ -196,7 +206,7 @@ fn change_map(
         let map = map_q.single();
         commands.entity(map).despawn();
         // Spawn the map
-        map_spawn(commands, tilesets, map_idx);
+        map_spawn(commands, tilesets, map_idx, sprites, true);
     }
 }
 
