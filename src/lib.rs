@@ -5,7 +5,10 @@ extern crate wasm_bindgen;
 use bevy::prelude::*;
 use wasm_bindgen::prelude::*;
 
-use plugins::{map_plugin::MapPlugin, menu_plugin::MenuPlugin, obj_plugin::ObjPlugin, player_plugin::PlayerPlugin};
+use plugins::{
+    map_plugin::MapPlugin, menu_plugin::MenuPlugin, obj_plugin::ObjPlugin,
+    player_plugin::PlayerPlugin,
+};
 use states::AppState;
 
 mod components;
@@ -62,4 +65,3 @@ fn get_window_size() -> (f32, f32) {
         .unwrap() as f32;
     (w, h)
 }
-

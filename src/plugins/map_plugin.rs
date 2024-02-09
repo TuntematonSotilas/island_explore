@@ -3,7 +3,7 @@ use bevy_ecs_tilemap::prelude::*;
 use seldom_pixel::{cursor::PxCursorPosition, prelude::*};
 
 use crate::{
-    components::{Direct, Map, MapClick, MapIdx, Player, TileBorder, TileType, Layer},
+    components::{Direct, Layer, Map, MapClick, MapIdx, Player, TileBorder, TileType},
     states::AppState,
 };
 
@@ -23,12 +23,13 @@ fn setup(commands: Commands, tilesets: PxAssets<PxTileset>, sprites: PxAssets<Px
     map_spawn(commands, tilesets, MapIdx::LeftTop, sprites, false);
 }
 
-fn map_spawn(mut commands: Commands, 
-	mut tilesets: PxAssets<PxTileset>, 
-	map_idx: MapIdx,
+fn map_spawn(
+    mut commands: Commands,
+    mut tilesets: PxAssets<PxTileset>,
+    map_idx: MapIdx,
     mut sprites: PxAssets<PxSprite>,
-	is_change: bool) {
-
+    is_change: bool,
+) {
     let map_size = TilemapSize { x: 8, y: 8 };
     let mut storage = TileStorage::empty(map_size);
 
@@ -68,7 +69,7 @@ fn map_spawn(mut commands: Commands,
             };
 
             let border: Option<TileBorder> = if isl { get_border(x, y, map_idx) } else { None };
-			
+
             storage.set(
                 &TilePos { x, y },
                 commands
@@ -84,7 +85,7 @@ fn map_spawn(mut commands: Commands,
                     ))
                     .id(),
             );
-        }	
+        }
     }
 
     // Spawn the map
@@ -105,30 +106,26 @@ fn map_spawn(mut commands: Commands,
         Map,
     ));
 
-	// Spawn the Map Click Sprite
-	if !is_change {
-		let mapclick = sprites.load("/public/sprite/mapclick.png");
-		commands.spawn((
-			PxSpriteBundle::<Layer> {
-				sprite: mapclick,
-				position: IVec2::new(0, 0).into(),
-				visibility: Visibility::Hidden,
-				..default()
-			},
-			MapClick,
-		));
-	}
-	
+    // Spawn the Map Click Sprite
+    if !is_change {
+        let mapclick = sprites.load("/public/sprite/mapclick.png");
+        commands.spawn((
+            PxSpriteBundle::<Layer> {
+                sprite: mapclick,
+                position: IVec2::new(0, 0).into(),
+                visibility: Visibility::Hidden,
+                ..default()
+            },
+            MapClick,
+        ));
+    }
 }
 
-fn hide_mapclick(
-    player_q: Query<&Player>,
-    mut mapclick_q: Query<&mut Visibility, With<MapClick>>,
-) {
+fn hide_mapclick(player_q: Query<&Player>, mut mapclick_q: Query<&mut Visibility, With<MapClick>>) {
     let player = player_q.single();
     if !player.moving {
         // Hide Map Click Sprite
-    	let mut visibility = mapclick_q.single_mut();
+        let mut visibility = mapclick_q.single_mut();
         *visibility = Visibility::Hidden;
     }
 }
@@ -140,7 +137,7 @@ fn click(
     mut player_q: Query<&mut Player>,
     tilemap_q: Query<&TileStorage>,
     tile_query: Query<&mut TileType>,
-	mut mapclick_q: Query<(&mut Visibility, &mut PxPosition), With<MapClick>>,
+    mut mapclick_q: Query<(&mut Visibility, &mut PxPosition), With<MapClick>>,
 ) {
     if buttons.just_released(MouseButton::Left) {
         let tile_storage = tilemap_q.single();
@@ -178,10 +175,10 @@ fn click(
                 };
 
                 if clickable {
-					// Show Map Click Sprite
+                    // Show Map Click Sprite
                     let (mut visibility, mut pos) = mapclick_q.single_mut();
-        			*visibility = Visibility::Visible;
-					**pos = dest;
+                    *visibility = Visibility::Visible;
+                    **pos = dest;
                     player.moving = true;
                     player.dest = dest;
                 }
@@ -195,7 +192,7 @@ fn change_map(
     mut commands: Commands,
     map_q: Query<Entity, &Map>,
     tilesets: PxAssets<PxTileset>,
-	sprites: PxAssets<PxSprite>,
+    sprites: PxAssets<PxSprite>,
 ) {
     let mut player = player_q.single_mut();
     if player.next_map.is_some() {

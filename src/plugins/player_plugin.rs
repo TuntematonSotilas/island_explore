@@ -38,7 +38,7 @@ fn setup(mut commands: Commands, mut sprites: PxAssets<PxSprite>) {
             current_map: MapIdx::LeftTop,
             prev_direct: Direct::Stop,
             new_direct: Direct::Stop,
-			animated: false,
+            animated: false,
         },
     ));
 }
@@ -81,7 +81,6 @@ fn move_player(
 
             **pos = IVec2::new(x, y);
             player.time = 0.;
-             
         }
     } else if player.moving {
         player.moving = false;
@@ -132,7 +131,6 @@ fn change_direction(
 ) {
     let (entity, pos, mut player) = player_q.single_mut();
     if player.new_direct != player.prev_direct {
-
         let suffix = match player.new_direct {
             Direct::Right => "_r",
             Direct::Left => "_l",
@@ -148,28 +146,26 @@ fn change_direction(
             sprites.load_animated(path, 3)
         };
 
-		commands.entity(entity).remove::<PxSpriteBundle::<Layer>>();
-		commands.entity(entity).remove::<PxAnimationBundle>();
+        commands.entity(entity).remove::<PxSpriteBundle<Layer>>();
+        commands.entity(entity).remove::<PxAnimationBundle>();
 
-		let sprite_bnd = PxSpriteBundle::<Layer> {
+        let sprite_bnd = PxSpriteBundle::<Layer> {
             sprite,
             position: IVec2::new(pos.x, pos.y).into(),
             ..default()
         };
-		commands.entity(entity).insert(sprite_bnd);
+        commands.entity(entity).insert(sprite_bnd);
 
-		player.prev_direct = player.new_direct;
+        player.prev_direct = player.new_direct;
 
-		if player.new_direct == Direct::Stop {
-			player.animated = false;
+        if player.new_direct == Direct::Stop {
+            player.animated = false;
         } else {
-			player.animated = true;
-			commands.entity(entity).insert(
-				PxAnimationBundle {
-                    on_finish: PxAnimationFinishBehavior::Loop,
-                    ..default()
-                }
-			);
-		}
+            player.animated = true;
+            commands.entity(entity).insert(PxAnimationBundle {
+                on_finish: PxAnimationFinishBehavior::Loop,
+                ..default()
+            });
+        }
     }
 }
