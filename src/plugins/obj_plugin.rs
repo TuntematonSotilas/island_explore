@@ -42,14 +42,12 @@ fn set_to_top(
 		pos_player.y < pos_tree.y + 4;
 
 	if collide {
-		info!("set tree to top");
 		player.animated = false;
 		commands.entity(entity_p).remove::<PxAnimationBundle>();
 
 	}
 
 	if !collide && !player.animated {
-		info!("reset anim");
 		player.animated = true;
 		commands.entity(entity_p).insert(
 			PxAnimationBundle {

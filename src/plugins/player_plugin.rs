@@ -126,13 +126,12 @@ fn move_player(
 }
 
 fn change_direction(
-    player_q: Query<(Entity, &PxPosition, &Player)>,
+    mut player_q: Query<(Entity, &PxPosition, &mut Player)>,
     mut commands: Commands,
     mut sprites: PxAssets<PxSprite>,
 ) {
-    let (entity, pos, player) = player_q.single();
+    let (entity, pos, mut player) = player_q.single_mut();
     if player.new_direct != player.prev_direct {
-        commands.entity(entity).despawn();
 
         let suffix = match player.new_direct {
             Direct::Right => "_r",
@@ -149,36 +148,28 @@ fn change_direction(
             sprites.load_animated(path, 3)
         };
 
-        let mut player = Player {
-            prev: player.prev,
-            dest: player.dest,
-            time: player.time,
-            moving: player.moving,
-            next_map: player.next_map,
-            current_map: player.current_map,
-            prev_direct: player.new_direct,
-            new_direct: player.new_direct,
-			animated: false,
-        };
-        let sprite_bnd = PxSpriteBundle::<Layer> {
+		commands.entity(entity).remove::<PxSpriteBundle::<Layer>>();
+		commands.entity(entity).remove::<PxAnimationBundle>();
+
+		let sprite_bnd = PxSpriteBundle::<Layer> {
             sprite,
             position: IVec2::new(pos.x, pos.y).into(),
             ..default()
         };
+		commands.entity(entity).insert(sprite_bnd);
 
-        if player.new_direct == Direct::Stop {
-			commands.spawn((sprite_bnd, player));
+		player.prev_direct = player.new_direct;
+
+		if player.new_direct == Direct::Stop {
+			player.animated = false;
         } else {
 			player.animated = true;
-            commands.spawn((
-                sprite_bnd,
-                PxAnimationBundle {
+			commands.entity(entity).insert(
+				PxAnimationBundle {
                     on_finish: PxAnimationFinishBehavior::Loop,
                     ..default()
-                },
-                player,
-            ));
-        }
-
+                }
+			);
+		}
     }
 }
