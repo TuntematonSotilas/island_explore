@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use seldom_pixel::prelude::*;
 
 use crate::{
-    components::{Layer, Player, Tree},
+    components::{Layer, Map, MapIdx, Player, Tree},
     states::AppState,
 };
 
@@ -10,17 +10,47 @@ pub struct ObjPlugin;
 
 impl Plugin for ObjPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(AppState::InGame), tree_spawn)
-            .add_systems(Update, set_to_top.run_if(in_state(AppState::InGame)));
+        app.add_systems(Update, (trees_spawn, set_to_top).run_if(in_state(AppState::InGame)));
     }
 }
 
-fn tree_spawn(mut commands: Commands, mut sprites: PxAssets<PxSprite>) {
-    let tree = sprites.load("/public/sprite/tree.png");
+fn trees_spawn(
+	mut commands: Commands, 
+	sprites: PxAssets<PxSprite>,
+	mut map_q: Query<&mut Map>,
+	player_q: Query<&Player>,
+	tree_q: Query<Entity, With<Tree>>,
+) {
+	let mut map = map_q.single_mut();
+	let player = player_q.single(); 
+
+	if map.is_new {
+		map.is_new = false;
+		// Despawn all trees
+		for entity in &tree_q {
+			commands.entity(entity).despawn();
+		}
+		// Spawn trees
+		if player.current_map == MapIdx::LeftTop {
+			let pos = IVec2::new(44, 44);
+			tree_spawn(commands, sprites, pos, false);
+		} 
+	}
+}
+
+fn tree_spawn(
+	mut commands: Commands, 
+	mut sprites: PxAssets<PxSprite>, 
+	pos: IVec2,
+	is_small: bool,
+) {
+	let name = if is_small { "tree_small" } else { "tree" };
+	let path = format!("/public/sprite/{name}.png");
+    let tree = sprites.load(path);
     commands.spawn((
         PxSpriteBundle::<Layer> {
             sprite: tree,
-            position: IVec2::new(44, 44).into(),
+            position: pos.into(),
             ..default()
         },
         Tree,
@@ -32,24 +62,26 @@ fn set_to_top(
     mut player_q: Query<(Entity, &mut Player, &PxPosition), With<Player>>,
     mut commands: Commands,
 ) {
-    let (entity_p, mut player, pos_player) = player_q.single_mut();
-    let pos_tree = tree_q.single_mut();
-
-    let collide = pos_player.x > pos_tree.x - 4
-        && pos_player.x < pos_tree.x + 4
-        && pos_player.y > pos_tree.y - 4
-        && pos_player.y < pos_tree.y + 4;
-
-    if collide {
-        player.animated = false;
-        commands.entity(entity_p).remove::<PxAnimationBundle>();
-    }
-
-    if !collide && !player.animated {
-        player.animated = true;
-        commands.entity(entity_p).insert(PxAnimationBundle {
-            on_finish: PxAnimationFinishBehavior::Loop,
-            ..default()
-        });
-    }
+	if !tree_q.is_empty() {
+		let (entity_p, mut player, pos_player) = player_q.single_mut();
+		let pos_tree = tree_q.single_mut();
+	
+		let collide = pos_player.x > pos_tree.x - 4
+			&& pos_player.x < pos_tree.x + 4
+			&& pos_player.y > pos_tree.y - 4
+			&& pos_player.y < pos_tree.y + 4;
+	
+		if collide {
+			player.animated = false;
+			commands.entity(entity_p).remove::<PxAnimationBundle>();
+		}
+	
+		if !collide && !player.animated {
+			player.animated = true;
+			commands.entity(entity_p).insert(PxAnimationBundle {
+				on_finish: PxAnimationFinishBehavior::Loop,
+				..default()
+			});
+		}
+	}
 }

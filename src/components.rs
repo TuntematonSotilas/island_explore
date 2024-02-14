@@ -18,7 +18,10 @@ pub struct Player {
 }
 
 #[derive(Component)]
-pub struct Map;
+pub struct Map 
+{
+	pub is_new: bool,
+}
 
 #[derive(Component)]
 pub struct MapClick;

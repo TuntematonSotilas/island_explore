@@ -103,7 +103,7 @@ fn map_spawn(
             frame_transition: PxAnimationFrameTransition::None,
             ..default()
         },
-        Map,
+        Map { is_new: true },
     ));
 
     // Spawn the Map Click Sprite
