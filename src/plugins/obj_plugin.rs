@@ -72,16 +72,15 @@ fn set_to_top(
 			&& pos_player.y < pos_tree.y + 4;
 	
 		if collide {
-			player.animated = false;
+			info!("collide");
+			player.collide = true;
 			commands.entity(entity_p).remove::<PxAnimationBundle>();
 		}
 	
-		if !collide && !player.animated {
-			player.animated = true;
-			commands.entity(entity_p).insert(PxAnimationBundle {
-				on_finish: PxAnimationFinishBehavior::Loop,
-				..default()
-			});
+		if !collide && player.collide {
+			info!("reset");
+			player.collide = false;
+			player.reset_dir = true;
 		}
 	}
 }

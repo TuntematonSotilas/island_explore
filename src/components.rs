@@ -14,7 +14,8 @@ pub struct Player {
     pub current_map: MapIdx,
     pub prev_direct: Direct,
     pub new_direct: Direct,
-    pub animated: bool,
+    pub collide: bool,
+	pub reset_dir: bool,
 }
 
 #[derive(Component)]
