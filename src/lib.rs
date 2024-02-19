@@ -2,7 +2,7 @@
 
 extern crate wasm_bindgen;
 
-use bevy::prelude::*;
+use bevy::{asset::AssetMetaCheck, prelude::*};
 use wasm_bindgen::prelude::*;
 
 use plugins::{
@@ -28,6 +28,7 @@ pub fn start() {
     };
 
     App::new()
+        .insert_resource(AssetMetaCheck::Never)
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {

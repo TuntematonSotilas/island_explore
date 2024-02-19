@@ -74,7 +74,7 @@ fn setup(
         PxTextBundle::<Layer> {
             text: "ISLAND".into(),
             typeface: typeface_bold,
-            rect: IRect::new(IVec2::ZERO, IVec2::splat(64)).into(),
+            rect: IRect::new(0, 0, 64, 64).into(),
             alignment: PxAnchor::Custom(Vec2::new(0.5, 0.9)),
             ..default()
         },
@@ -92,7 +92,7 @@ fn setup(
         PxTextBundle::<Layer> {
             text: "EXPLORE".into(),
             typeface,
-            rect: IRect::new(IVec2::ZERO, IVec2::splat(64)).into(),
+            rect: IRect::new(0, 0, 64, 64).into(),
             alignment: PxAnchor::Custom(Vec2::new(0.5, 0.7)),
             ..default()
         },
