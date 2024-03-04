@@ -31,7 +31,7 @@ fn setup(
         .unwrap()
         .document()
         .unwrap()
-        .get_element_by_id("ctn")
+        .get_element_by_id("loader")
         .unwrap()
         .set_class_name("hide");
 

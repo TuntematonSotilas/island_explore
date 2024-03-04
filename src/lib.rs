@@ -4,7 +4,6 @@ extern crate wasm_bindgen;
 
 use bevy::{asset::AssetMetaCheck, prelude::*};
 use wasm_bindgen::prelude::*;
-use bevy_wasm_window_resize::WindowResizePlugin;
 
 use plugins::{
     map_plugin::MapPlugin, menu_plugin::MenuPlugin, obj_plugin::ObjPlugin,
@@ -21,13 +20,19 @@ mod states;
 // ------ ------
 #[wasm_bindgen(start)]
 pub fn start() {
+    let (w, h) = get_window_size();
+    let size = if h > w {
+        w // Mobile
+    } else {
+        h * 0.8 // Desktop
+    };
+
     App::new()
         .insert_resource(AssetMetaCheck::Never)
-
         .add_plugins((
-            WindowResizePlugin,
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
+                    resolution: Vec2::splat(size).into(),
                     canvas: Some("#game".into()),
                     ..default()
                 }),
@@ -41,4 +46,23 @@ pub fn start() {
         .add_state::<AppState>()
         .insert_resource(ClearColor(Color::hex("#1f93ac").unwrap_or_default()))
         .run();
+}
+
+#[allow(clippy::cast_possible_truncation)]
+fn get_window_size() -> (f32, f32) {
+    let w = web_sys::window()
+        .unwrap()
+        .inner_width()
+        .ok()
+        .unwrap()
+        .as_f64()
+        .unwrap() as f32;
+    let h = web_sys::window()
+        .unwrap()
+        .inner_height()
+        .ok()
+        .unwrap()
+        .as_f64()
+        .unwrap() as f32;
+    (w, h)
 }
