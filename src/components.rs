@@ -15,13 +15,12 @@ pub struct Player {
     pub prev_direct: Direct,
     pub new_direct: Direct,
     pub collide: bool,
-	pub reset_dir: bool,
+    pub reset_dir: bool,
 }
 
 #[derive(Component)]
-pub struct Map 
-{
-	pub is_new: bool,
+pub struct Map {
+    pub is_new: bool,
 }
 
 #[derive(Component)]

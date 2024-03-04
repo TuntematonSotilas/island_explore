@@ -39,7 +39,7 @@ fn setup(mut commands: Commands, mut sprites: PxAssets<PxSprite>) {
             prev_direct: Direct::Stop,
             new_direct: Direct::Stop,
             collide: false,
-			reset_dir: false,
+            reset_dir: false,
         },
     ));
 }
@@ -132,7 +132,7 @@ fn change_direction(
 ) {
     let (entity, pos, mut player) = player_q.single_mut();
     if player.new_direct != player.prev_direct {
-		player.prev_direct = player.new_direct;
+        player.prev_direct = player.new_direct;
 
         let suffix = match player.new_direct {
             Direct::Right => "_r",
@@ -159,7 +159,6 @@ fn change_direction(
         };
         commands.entity(entity).insert(sprite_bnd);
 
-        
         if player.new_direct != Direct::Stop {
             commands.entity(entity).insert(PxAnimationBundle {
                 on_finish: PxAnimationFinishBehavior::Loop,
