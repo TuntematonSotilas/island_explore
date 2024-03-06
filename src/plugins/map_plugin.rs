@@ -42,22 +42,27 @@ fn map_spawn(
             let sea: bool;
             let mut border_bott = false;
             let mut border_left = false;
+            let mut border_left_top = false;
 
             if map_idx == MapIdx::LeftTop {
                 sea = y == 7;
                 border_left = x == 0 && y != 7;
+                border_left_top = x == 0 && y == 6;
             } else if map_idx == MapIdx::RightTop {
                 sea = x == 7 || y == 7;
             } else if map_idx == MapIdx::LeftBottom {
                 sea = x == 0 || y == 0;
                 border_bott = y == 0 && x != 0;
+                border_left = x == 0 && y != 0;
             } else {
                 sea = x == 7;
                 border_bott = y == 0 && x != 7;
             }
 
             let mut isl = false;
-            let idx = if border_left {
+            let idx = if border_left_top {
+                5
+            } else if border_left {
                 4
             } else if border_bott {
                 3
