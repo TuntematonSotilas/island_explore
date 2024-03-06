@@ -14,6 +14,7 @@ use states::AppState;
 mod components;
 mod plugins;
 mod states;
+mod resources;
 
 // ------ ------
 //     Start

@@ -1,18 +1,20 @@
 use bevy::prelude::*;
 use seldom_pixel::prelude::*;
+use rand::Rng;
 
 use crate::{
     components::{Layer, Map, MapIdx, Player, Tree},
     states::AppState,
+    resources::Trees
 };
 
 pub struct ObjPlugin;
 
 impl Plugin for ObjPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
-            Update,
-            (trees_spawn, set_to_top).run_if(in_state(AppState::InGame)),
+        app.insert_resource(Trees(Vec::new()))
+            .add_systems(OnEnter(AppState::InGame), generate_pos)
+            .add_systems(Update, (trees_spawn, set_to_top).run_if(in_state(AppState::InGame)),
         );
     }
 }
@@ -81,4 +83,12 @@ fn set_to_top(
             player.reset_dir = true;
         }
     }
+}
+
+fn generate_pos(/*trees: Res<Trees>*/) {
+    let mut rng = rand::thread_rng();
+    let x = rng.gen_range(0..8);
+    let y = rng.gen_range(0..8);
+    let pos = IVec2::new(x, y);
+    info!(pos.x, pos.y);
 }
