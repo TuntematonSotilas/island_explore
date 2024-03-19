@@ -43,6 +43,8 @@ fn map_spawn(
             let mut border_bott = false;
             let mut border_left = false;
             let mut border_left_top = false;
+            let mut border_right_top = false;
+            let mut border_bottom_right = false;
 
             if map_idx == MapIdx::LeftTop {
                 sea = y == 7;
@@ -50,6 +52,7 @@ fn map_spawn(
                 border_left_top = x == 0 && y == 6;
             } else if map_idx == MapIdx::RightTop {
                 sea = x == 7 || y == 7;
+                border_right_top = x == 6 && y == 6;
             } else if map_idx == MapIdx::LeftBottom {
                 sea = x == 0 || y == 0;
                 border_bott = y == 0 && x != 0;
@@ -57,10 +60,15 @@ fn map_spawn(
             } else {
                 sea = x == 7;
                 border_bott = y == 0 && x != 7;
+                border_bottom_right = y == 0 && x == 6;
             }
 
             let mut isl = false;
-            let idx = if border_left_top {
+            let idx = if border_bottom_right {
+                7  
+            } else if border_right_top {
+                6
+            } else if border_left_top {
                 5
             } else if border_left {
                 4
