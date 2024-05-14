@@ -1,28 +1,135 @@
-use bevy::prelude::*;
-use bevy_ecs_tilemap::prelude::*;
-use seldom_pixel::{cursor::PxCursorPosition, prelude::*};
+use bevy::{prelude::*, sprite::Anchor};
+use seldom_map_nav::prelude::*;
+use seldom_map_nav::prelude::*;
+use rand::{thread_rng, Rng};
 
 use crate::{
-    components::{Direct, Layer, Map, MapClick, MapIdx, Player, TileBorder, TileType},
+    components::Player,
     states::AppState,
+    resources::CursorPos,
 };
+
 
 pub struct MapPlugin;
 
+const MAP_SIZE: UVec2 = UVec2::new(24, 24);
+const TILE_SIZE: Vec2 = Vec2::new(32., 32.);
+// This is the radius of a square around the player that should not intersect with the terrain
+const PLAYER_CLEARANCE: f32 = 8.;
+
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(AppState::InGame), setup)
-            .add_systems(
-                Update,
-                (click, hide_mapclick, change_map).run_if(in_state(AppState::InGame)),
-            );
+        app
+        // This plugin is required for pathfinding and navigation
+        // The type parameter is the position component that you use
+        .add_plugins(MapNavPlugin::<Transform>::default())
+        .init_resource::<CursorPos>()
+
+        .add_systems(OnEnter(AppState::InGame), init)
+        .add_systems(Update, (update_cursor_pos, move_player).chain());
+
+            //.add_systems(Update,(click, hide_mapclick, change_map).run_if(in_state(AppState::InGame)),);
     }
 }
 
-fn setup(commands: Commands, tilesets: PxAssets<PxTileset>, sprites: PxAssets<PxSprite>) {
-    map_spawn(commands, tilesets, MapIdx::LeftTop, sprites, false);
+fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
+    commands.spawn(Camera2dBundle {
+        // Centering the camera
+        transform: Transform::from_translation((MAP_SIZE.as_vec2() * TILE_SIZE / 2.).extend(999.9)),
+        ..default()
+    });
+
+    let mut rng = thread_rng();
+    // Randomly generate the tilemap
+    let tilemap = [(); (MAP_SIZE.x * MAP_SIZE.y) as usize].map(|_| match rng.gen_bool(0.8) {
+        true => Navability::Navable,
+        false => Navability::Solid,
+    });
+    let navability = |pos: UVec2| tilemap[(pos.y * MAP_SIZE.x + pos.x) as usize];
+
+    // Spawn images for the tiles
+    let tile_image = asset_server.load("/public/demo/tile.png");
+    let mut player_pos = default();
+    for x in 0..MAP_SIZE.x {
+        for y in 0..MAP_SIZE.y {
+            let pos = UVec2::new(x, y);
+            if let Navability::Navable = navability(pos) {
+                let pos = UVec2::new(x, y).as_vec2() * TILE_SIZE;
+                player_pos = pos;
+
+                commands.spawn(SpriteBundle {
+                    sprite: Sprite {
+                        anchor: Anchor::BottomLeft,
+                        ..default()
+                    },
+                    transform: Transform::from_translation(pos.extend(0.)),
+                    texture: tile_image.clone(),
+                    ..default()
+                });
+            }
+        }
+    }
+
+    // Here's the important bit:
+
+    // Spawn the tilemap with a `Navmeshes` component
+    commands
+        .spawn(Navmeshes::generate(MAP_SIZE, TILE_SIZE, navability, [PLAYER_CLEARANCE]).unwrap());
+
+    // Spawn the player component. A position component is necessary. We will add `NavBundle`
+    // later.
+    commands.spawn((
+        SpriteBundle {
+            transform: Transform::from_translation((player_pos + TILE_SIZE / 2.).extend(1.)),
+            texture: asset_server.load("/public/demo/player.png"),
+            ..default()
+        },
+        Player,
+    ));
 }
 
+// Navigate the player to wherever you click
+fn move_player(
+    mut commands: Commands,
+    players: Query<Entity, With<Player>>,
+    navmesheses: Query<Entity, With<Navmeshes>>,
+    cursor_pos: Res<CursorPos>,
+    mouse: Res<ButtonInput<MouseButton>>,
+) {
+    if mouse.just_pressed(MouseButton::Left) {
+        if let Some(cursor_pos) = **cursor_pos {
+            // Clicked somewhere on the screen!
+            // Add `NavBundle` to start navigating to that position
+            // If you want to write your own movement, but still want paths generated,
+            // only insert `Pathfind`.
+            commands.entity(players.single()).insert(NavBundle {
+                pathfind: Pathfind::new(
+                    navmesheses.single(),
+                    PLAYER_CLEARANCE,
+                    None,
+                    PathTarget::Static(cursor_pos),
+                    NavQuery::Accuracy,
+                    NavPathMode::Accuracy,
+                ),
+                nav: Nav::new(200.),
+            });
+        }
+    }
+}
+
+fn update_cursor_pos(
+    cameras: Query<(&Camera, &GlobalTransform)>,
+    windows: Query<&Window>,
+    mut position: ResMut<CursorPos>,
+) {
+    let (camera, transform) = cameras.single();
+    **position = windows
+        .single()
+        .cursor_position()
+        .and_then(|cursor_pos| camera.viewport_to_world_2d(transform, cursor_pos));
+}
+
+/*
 fn map_spawn(
     mut commands: Commands,
     mut tilesets: PxAssets<PxTileset>,
@@ -273,3 +380,4 @@ fn get_border(tile_x: u32, tile_y: u32, map_idx: MapIdx) -> Option<TileBorder> {
     }
     border
 }
+*/

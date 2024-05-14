@@ -5,8 +5,8 @@ use seldom_pixel::prelude::*;
 pub struct Layer;
 
 #[derive(Component)]
-pub struct Player {
-    pub prev: IVec2,
+pub struct Player;
+    /*pub prev: IVec2,
     pub dest: IVec2,
     pub time: f32,
     pub moving: bool,
@@ -15,9 +15,9 @@ pub struct Player {
     pub prev_direct: Direct,
     pub new_direct: Direct,
     pub collide: bool,
-    pub reset_dir: bool,
-}
+    pub reset_dir: bool,*/
 
+/*
 #[derive(Component)]
 pub struct Map {
     pub is_new: bool,
@@ -62,3 +62,4 @@ pub enum MapIdx {
     LeftBottom,
     RightBottom,
 }
+*/

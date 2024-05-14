@@ -6,8 +6,9 @@ use bevy::{asset::AssetMetaCheck, prelude::*};
 use wasm_bindgen::prelude::*;
 
 use plugins::{
-    map_plugin::MapPlugin, menu_plugin::MenuPlugin, obj_plugin::ObjPlugin,
-    player_plugin::PlayerPlugin,
+    map_plugin::MapPlugin, menu_plugin::MenuPlugin, 
+    //obj_plugin::ObjPlugin,
+    //player_plugin::PlayerPlugin,
 };
 use states::AppState;
 
@@ -41,10 +42,10 @@ pub fn start() {
             }),
             MenuPlugin,
             MapPlugin,
-            PlayerPlugin,
-            ObjPlugin,
+            //PlayerPlugin,
+            //ObjPlugin,
         ))
-        .add_state::<AppState>()
+        .init_state::<AppState>()
         .insert_resource(ClearColor(Color::hex("#1f93ac").unwrap_or_default()))
         .run();
 }

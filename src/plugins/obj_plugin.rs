@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+/*use bevy::prelude::*;
 use seldom_pixel::prelude::*;
 use rand::Rng;
 
@@ -91,4 +91,4 @@ fn generate_pos(/*trees: Res<Trees>*/) {
     let y = rng.gen_range(0..8);
     let pos = IVec2::new(x, y);
     info!(pos.x, pos.y);
-}
+}*/

@@ -115,7 +115,7 @@ fn interact_buttons(
     }
 }
 
-fn exit(mut commands: Commands, query: Query<Entity, &Menu>) {
+fn exit(mut commands: Commands, query: Query<Entity, With<Menu>>) {
     for e in query.iter() {
         commands.entity(e).despawn();
     }
