@@ -15,9 +15,8 @@ watch = true
 
 [tasks.serve]
 description = "Start server"
-install_crate = { crate_name = "microserver", binary = "microserver", test_arg = "-h" }
-command = "microserver"
-args = ["--port", "${PORT}"]
+install_crate = { crate_name = "basic-http-server", binary = "basic-http-server", test_arg = "-h" }
+command = "basic-http-server"
 
 [tasks.verify]
 description = "Format, lint with Clippy and run tests"

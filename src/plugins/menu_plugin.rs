@@ -24,7 +24,11 @@ fn setup(
     mut cursor: ResMut<PxCursor>,
     mut typefaces: PxAssets<PxTypeface>,
 ) {
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn(Camera2dBundle {
+        // Centering the camera
+        transform: Transform::from_translation((Vec2::new(64., 64.)).extend(999.9)),
+        ..Default::default()
+    });
 
     // Hide loader
     web_sys::window()

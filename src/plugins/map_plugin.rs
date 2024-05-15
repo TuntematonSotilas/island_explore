@@ -26,18 +26,18 @@ impl Plugin for MapPlugin {
         .init_resource::<CursorPos>()
 
         .add_systems(OnEnter(AppState::InGame), init)
-        .add_systems(Update, (update_cursor_pos, move_player).chain());
+        .add_systems(Update, (update_cursor_pos, move_player).chain().run_if(in_state(AppState::InGame)));
 
             //.add_systems(Update,(click, hide_mapclick, change_map).run_if(in_state(AppState::InGame)),);
     }
 }
 
 fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn(Camera2dBundle {
+    /*commands.spawn(Camera2dBundle {
         // Centering the camera
         transform: Transform::from_translation((MAP_SIZE.as_vec2() * TILE_SIZE / 2.).extend(999.9)),
         ..default()
-    });
+    });*/
 
     let mut rng = thread_rng();
     // Randomly generate the tilemap
