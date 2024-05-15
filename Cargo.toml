@@ -12,8 +12,8 @@ crate-type = ["cdylib"]
 
 [dependencies]
 bevy = { version = "0.13.2", features = ["png"] }
-seldom_pixel = { version = "0.6.0" }
-seldom_map_nav = "0.6.0"
+seldom_pixel = "0.6.0"
+seldom_map_nav = { version = "0.6.1", features = ["wasm"] }
 wasm-bindgen = "0.2.92"
 web-sys = { version = "0.3.69", features = ["Window", "Document", "Element"] }
 rand = "0.8.5"
