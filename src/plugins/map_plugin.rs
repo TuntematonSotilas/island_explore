@@ -1,7 +1,5 @@
-use bevy::{prelude::*, sprite::Anchor};
+use bevy::{log, prelude::*, sprite::Anchor};
 use seldom_map_nav::prelude::*;
-use seldom_map_nav::prelude::*;
-use rand::{thread_rng, Rng};
 
 use crate::{
     components::Player,
@@ -12,10 +10,10 @@ use crate::{
 
 pub struct MapPlugin;
 
-const MAP_SIZE: UVec2 = UVec2::new(24, 24);
-const TILE_SIZE: Vec2 = Vec2::new(32., 32.);
+const MAP_SIZE: UVec2 = UVec2::new(4, 4);
+const TILE_SIZE: Vec2 = Vec2::new(8., 8.);
 // This is the radius of a square around the player that should not intersect with the terrain
-const PLAYER_CLEARANCE: f32 = 8.;
+const PLAYER_CLEARANCE: f32 = 2.;
 
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
@@ -32,38 +30,41 @@ impl Plugin for MapPlugin {
     }
 }
 
-fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn init(mut commands: Commands, asset_server: Res<AssetServer>, 
+        mut camera_q: Query<&mut Transform, With<Camera>>) {
     /*commands.spawn(Camera2dBundle {
         // Centering the camera
         transform: Transform::from_translation((MAP_SIZE.as_vec2() * TILE_SIZE / 2.).extend(999.9)),
         ..default()
     });*/
 
-    let mut rng = thread_rng();
-    // Randomly generate the tilemap
-    let tilemap = [(); (MAP_SIZE.x * MAP_SIZE.y) as usize].map(|_| match rng.gen_bool(0.8) {
-        true => Navability::Navable,
-        false => Navability::Solid,
-    });
-    let navability = |pos: UVec2| tilemap[(pos.y * MAP_SIZE.x + pos.x) as usize];
+    // Centering the camera
+    let mut transform = camera_q.single_mut();
+    transform.translation = (MAP_SIZE.as_vec2() * TILE_SIZE / 2.).extend(999.9);
+
+    let navability = |pos: UVec2| {
+        if pos.x == 0 {
+            Navability::Solid
+        } else {
+            Navability::Navable
+        }
+    };
 
     // Spawn images for the tiles
-    let tile_image = asset_server.load("/public/demo/tile.png");
-    let mut player_pos = default();
+    let sea = asset_server.load("/public/demo/tilesmall.png");
     for x in 0..MAP_SIZE.x {
         for y in 0..MAP_SIZE.y {
             let pos = UVec2::new(x, y);
             if let Navability::Navable = navability(pos) {
+                log::info!("sea");
                 let pos = UVec2::new(x, y).as_vec2() * TILE_SIZE;
-                player_pos = pos;
-
                 commands.spawn(SpriteBundle {
                     sprite: Sprite {
                         anchor: Anchor::BottomLeft,
                         ..default()
                     },
                     transform: Transform::from_translation(pos.extend(0.)),
-                    texture: tile_image.clone(),
+                    texture: sea.clone(),
                     ..default()
                 });
             }
@@ -80,8 +81,8 @@ fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
     // later.
     commands.spawn((
         SpriteBundle {
-            transform: Transform::from_translation((player_pos + TILE_SIZE / 2.).extend(1.)),
-            texture: asset_server.load("/public/demo/player.png"),
+            transform: Transform::from_translation(Vec2::new(0., 0.).extend(1.)),
+            texture: asset_server.load("/public/sprite/player.png"),
             ..default()
         },
         Player,
