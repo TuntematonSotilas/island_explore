@@ -1,4 +1,4 @@
-use bevy::{log, prelude::*, sprite::Anchor};
+use bevy::{log, prelude::*, render::camera::ScalingMode, sprite::Anchor};
 use seldom_map_nav::prelude::*;
 
 use crate::{
@@ -30,17 +30,14 @@ impl Plugin for MapPlugin {
     }
 }
 
-fn init(mut commands: Commands, asset_server: Res<AssetServer>, 
-        mut camera_q: Query<&mut Transform, With<Camera>>) {
-    /*commands.spawn(Camera2dBundle {
-        // Centering the camera
-        transform: Transform::from_translation((MAP_SIZE.as_vec2() * TILE_SIZE / 2.).extend(999.9)),
-        ..default()
-    });*/
+fn init(mut commands: Commands, 
+	asset_server: Res<AssetServer>, 
+	mut camera_q: Query<&mut OrthographicProjection, With<Camera>>,) {
 
-    // Centering the camera
-    let mut transform = camera_q.single_mut();
-    transform.translation = (MAP_SIZE.as_vec2() * TILE_SIZE / 2.).extend(999.9);
+    // Camera : zoom in 
+    let mut projection = camera_q.single_mut();
+	//projection.scaling_mode = ScalingMode::WindowSize(10.0);
+    projection.scale /= 4.;
 
     let navability = |pos: UVec2| {
         if pos.x == 0 {

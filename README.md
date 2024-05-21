@@ -1,5 +1,5 @@
 # island_explore
-Game
+A game that takes place on an island
 
 ## Install / check required tools
 Make sure you have basic tools installed:
@@ -8,9 +8,9 @@ Make sure you have basic tools installed:
 - [Bevy Setup](https://bevyengine.org/learn/book/getting-started/setup/)
 - [cargo-make](https://sagiegurari.github.io/cargo-make/)
 
-Install cargo-watch : `cargo install cargo-watch --locked`
-
 Add WASM Target : `rustup target add wasm32-unknown-unknown`
+
+If build failed : try to install cargo-watch : `cargo install cargo-watch --locked`
 
 ## Run
 

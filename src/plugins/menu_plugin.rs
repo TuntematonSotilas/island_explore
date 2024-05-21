@@ -26,7 +26,7 @@ fn setup(
 ) {
     commands.spawn(Camera2dBundle {
         // Centering the camera
-        transform: Transform::from_translation((Vec2::new(0., 0.)).extend(999.9)),
+        transform: Transform::from_translation((Vec2::new(0., 0.)).extend(1.)),
         ..Default::default()
     });
 

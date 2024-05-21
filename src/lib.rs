@@ -39,7 +39,8 @@ pub fn start() {
                     ..default()
                 }),
                 ..default()
-            }),
+            })
+			.set(ImagePlugin::default_nearest()),
             MenuPlugin,
             MapPlugin,
             //PlayerPlugin,
