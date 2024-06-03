@@ -40,6 +40,10 @@ h1 {
 	cursor: none;
 }
 
+#game:focus-visible {
+	outline: none;
+}
+
 .loader::after,
 .loader::before {
 	content: '';

@@ -11,7 +11,7 @@ use crate::{
 pub struct MapPlugin;
 
 const MAP_SIZE: UVec2 = UVec2::new(4, 4);
-const TILE_SIZE: Vec2 = Vec2::new(8., 8.);
+const TILE_SIZE: Vec2 = Vec2::new(32., 32.);
 // This is the radius of a square around the player that should not intersect with the terrain
 const PLAYER_CLEARANCE: f32 = 2.;
 
@@ -30,14 +30,12 @@ impl Plugin for MapPlugin {
     }
 }
 
-fn init(mut commands: Commands, 
-	asset_server: Res<AssetServer>, 
-	mut camera_q: Query<&mut OrthographicProjection, With<Camera>>,) {
+fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     // Camera : zoom in 
-    let mut projection = camera_q.single_mut();
-	//projection.scaling_mode = ScalingMode::WindowSize(10.0);
-    projection.scale /= 4.;
+    //mut camera_q: Query<&mut OrthographicProjection, With<Camera>>,
+    //let mut projection = camera_q.single_mut();
+	//projection.scale /= 5.;
 
     let navability = |pos: UVec2| {
         if pos.x == 0 {
@@ -48,19 +46,19 @@ fn init(mut commands: Commands,
     };
 
     // Spawn images for the tiles
-    let sea = asset_server.load("/public/demo/tilesmall.png");
+    let sea = asset_server.load("/public/tileset/sand.png");
     for x in 0..MAP_SIZE.x {
         for y in 0..MAP_SIZE.y {
             let pos = UVec2::new(x, y);
             if let Navability::Navable = navability(pos) {
                 log::info!("sea");
-                let pos = UVec2::new(x, y).as_vec2() * TILE_SIZE;
+                let tpos = UVec2::new(x, y).as_vec2() * TILE_SIZE;
                 commands.spawn(SpriteBundle {
                     sprite: Sprite {
                         anchor: Anchor::BottomLeft,
                         ..default()
                     },
-                    transform: Transform::from_translation(pos.extend(0.)),
+                    transform: Transform::from_translation(tpos.extend(0.)).with_scale(Vec3::new(8., 8., 0.)),
                     texture: sea.clone(),
                     ..default()
                 });
@@ -78,7 +76,7 @@ fn init(mut commands: Commands,
     // later.
     commands.spawn((
         SpriteBundle {
-            transform: Transform::from_translation(Vec2::new(0., 0.).extend(1.)),
+            transform: Transform::from_scale(Vec3::new(8., 8., 0.)),
             texture: asset_server.load("/public/sprite/player.png"),
             ..default()
         },
